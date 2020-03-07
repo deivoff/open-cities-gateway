@@ -1,0 +1,25 @@
+{
+  "compilerOptions": {
+    "target": "es2017",
+    "module": "commonjs",
+    "outDir": "dist",
+    "sourceMap": true,
+    "baseUrl": ".",
+    "jsx": "react",
+    "importHelpers": true,
+    "strict": true,
+    "noImplicitAny": false,
+    "noImplicitThis": false,
+    "alwaysStrict": true,
+    "moduleResolution": "node",
+    "esModuleInterop": true,
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+    "paths": {
+      "$types/*": ["types/*"],
+      "$components/*": ["src/components/*"],
+      "$helpers/*": ["src/helpers/*"],
+      "$middleware/*": ["src/middleware/*"]
+    }
+  }
+}
