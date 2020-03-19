@@ -1,16 +1,14 @@
 import {
-  prop as Property,
   arrayProp as Properties,
-  Typegoose,
   instanceMethod,
-  InstanceType,
-  ModelType,
+  prop as Property,
   staticMethod,
+  Typegoose,
 } from '@hasezoey/typegoose';
 import jwt from 'jsonwebtoken';
 import path from 'path';
-import { Model, Document } from 'mongoose';
-import { Field, ObjectType, ID } from 'type-graphql';
+import { Document, Model } from 'mongoose';
+import { Field, ID, ObjectType } from 'type-graphql';
 
 import { ObjectId } from 'mongodb';
 import { UserType } from '.';
@@ -75,7 +73,7 @@ export class User extends Typegoose {
   @Property({ _id: false })
   name!: UserName;
 
-  @Field(type => UserType)
+  @Field(() => UserType)
   @Property({ required: true, enum: UserType })
   role!: UserType;
 
@@ -107,14 +105,14 @@ export class User extends Typegoose {
   }
 
   @staticMethod
-  static async upsertGoogleUser({ accessToken, refreshToken, profile: {
+  static async upsetGoogleUser({ accessToken, refreshToken, profile: {
     email, name, id, photo
   } }: AuthData) {
     try {
       const user = await UserModel.findOne({ 'social.googleProvider.id': id });
 
       if (!user) {
-        const newUser = await UserModel.create({
+        return await UserModel.create({
           name,
           email,
           'social.googleProvider': {
@@ -124,8 +122,6 @@ export class User extends Typegoose {
           photos: [{ url: photo }],
           role: UserType.user,
         });
-
-        return newUser;
       }
       return user;
     } catch (error) {
@@ -137,7 +133,7 @@ export class User extends Typegoose {
 
 export type UserDocument = User & Document;
 export interface UserModel extends Model<UserDocument> {
-  upsertGoogleUser: (data: AuthData) => Promise<UserDocument>;
+  upsetGoogleUser: (data: AuthData) => Promise<UserDocument>;
   generateJWT: () => string;
 }
 export const UserModel: UserModel = new User().getModelForClass(User);
