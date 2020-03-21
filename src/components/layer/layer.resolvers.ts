@@ -1,16 +1,10 @@
-import {
-  Resolver, Query, Arg, Mutation, FieldResolver, Root, Ctx
-} from 'type-graphql';
-import {
-  Layer, LayerModel, LayerInput, LayerDocument
-} from '.';
+import { Arg, Ctx, FieldResolver, Mutation, Query, Resolver, Root } from 'type-graphql';
+import { Layer, LayerDocument, LayerInput, LayerModel } from '.';
 import { User, UserModel, UserType } from '../user';
-import { Geo, GeoModel } from '../geo';
 import { Context } from '$types/index';
 import { checkAuth } from '$middleware/auth';
-import { DecodedToken } from '../auth';
 
-@Resolver(of => Layer)
+@Resolver(() => Layer)
 export class LayerResolvers {
 
   @Query(returns => [Layer])
@@ -39,8 +33,7 @@ export class LayerResolvers {
       access: decodedUser!.access,
     });
     try {
-      const savedLayer = await layer.save();
-      return savedLayer;
+      return await layer.save();
     } catch (err) {
       throw err;
     }
@@ -51,16 +44,6 @@ export class LayerResolvers {
     try {
       const { owner } = layer;
       return (await UserModel.findById(owner))!;
-    } catch (error) {
-      throw error;
-    }
-  }
-
-  @FieldResolver(() => [Geo])
-  async geoCollection(@Root() layer: LayerDocument): Promise<Geo[]> {
-    try {
-      const { _id } = layer;
-      return (await GeoModel.find({ layer: String(_id) }))!;
     } catch (error) {
       throw error;
     }

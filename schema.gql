@@ -84,7 +84,6 @@ type Layer {
   access: UserType!
   city: String!
   subscribers: [User!]!
-  geoCollection: [Geo!]!
 }
 
 input LayerInput {
@@ -102,8 +101,9 @@ type Mutation {
 type Query {
   getUsers: [User!]!
   layers(city: String!): [Layer!]!
-  geos: [Geo!]!
+  geos(layerId: ID!): [Geo!]!
   cities: [City!]!
+  getCity(url: String!): City
   getGoogleOAuthRedirect: AuthRedirect!
 }
 

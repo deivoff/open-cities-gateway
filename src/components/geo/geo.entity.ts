@@ -16,13 +16,13 @@ import { Layer } from '../layer';
 @InputType('GeometryInput')
 export class Geometry {
 
-  @Field(type => GeometryType)
+  @Field(() => GeometryType)
   @Property({ required: true, enum: GeometryType })
   type!: GeometryType;
 
-  @Field(type => GeometryCoords)
+  @Field(() => GeometryCoords)
   @Properties({ items: Array })
-  coords!: Position | Position[] | Position[][] | Position[][];
+  coords!: Position | Position[] | Position[][] | Position[][][];
 
 }
 
@@ -46,15 +46,15 @@ export class Geo extends Typegoose {
   @Property({ required: true, ref: Layer })
   layer!: Ref<Layer>;
 
-  @Field(type => UserType)
+  @Field(() => UserType)
   @Property({ required: true, enum: UserType })
   access!: UserType;
 
-  @Field(type => Geometry)
+  @Field(() => Geometry)
   @Property({ required: true, _id: false })
   geometry!: Geometry;
 
-  @Field(type => GraphQLJSON)
+  @Field(() => GraphQLJSON)
   @Property()
   properties?: GeoJsonProperties;
 

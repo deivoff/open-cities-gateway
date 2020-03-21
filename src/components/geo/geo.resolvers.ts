@@ -1,10 +1,6 @@
-import {
-  Resolver, Mutation, Arg, Ctx, Query, FieldResolver, Root
-} from 'type-graphql';
-import {
-  GeoInput, Geo, GeoModel, GeoDocument
-} from '.';
-import { User, UserModel, UserType } from '../user';
+import { Arg, Ctx, FieldResolver, ID, Mutation, Query, Resolver, Root } from 'type-graphql';
+import { Geo, GeoDocument, GeoInput, GeoModel } from '.';
+import { User, UserModel } from '../user';
 import { Layer, LayerModel } from '../layer';
 import { Context } from '$types/index';
 import { checkAuth } from '$middleware/auth';
@@ -13,10 +9,17 @@ import { checkAuth } from '$middleware/auth';
 export class GeoResolvers {
 
   @Query(returns => [Geo])
-  async geos(): Promise<Geo[]> {
+  async geos(
+    @Arg('layerId', () => ID) layerId: Layer,
+    @Ctx() { ctx }: { ctx: Context }
+  ): Promise<Geo[]> {
+    checkAuth(ctx);
+    const { decodedUser } = ctx.state;
     try {
-      console.log(await GeoModel.find());
-      return await GeoModel.find();
+      return await GeoModel.find({
+        layer: layerId,
+        access: decodedUser!.access
+      });
     } catch (error) {
       throw error;
     }
@@ -37,8 +40,7 @@ export class GeoResolvers {
       access: decodedUser!.access,
     });
     try {
-      const savedGeo = await geo.save();
-      return savedGeo;
+      return await geo.save();
     } catch (err) {
       throw err;
     }

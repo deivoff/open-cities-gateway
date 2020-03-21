@@ -42,10 +42,6 @@ export class Layer extends Typegoose {
   @Field(() => [User])
   @Properties({ itemsRef: { name: 'User' } })
   subscribers?: Ref<User[]>;
-
-  @Field(() => [Geo])
-  geoCollection?: Ref<Geo[]>;
-
 }
 
 export type LayerDocument = Layer & Document;
