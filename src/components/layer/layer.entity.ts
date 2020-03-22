@@ -5,7 +5,21 @@ import { ObjectType, Field, ID } from 'type-graphql';
 import { ObjectId } from 'mongodb';
 import { Model, Document } from 'mongoose';
 import { User, UserType } from '../user';
-import { Geo } from '../geo';
+import { GraphQLJSON } from '$helpers/scalars';
+
+export class LayerProperty {
+  @Property({ required: true })
+  key!: string;
+
+  @Property({ required: true })
+  name!: string;
+
+  @Property({ required: true })
+  type!: string;
+
+  @Properties({ items: Array })
+  nested?: Ref<LayerProperty>[];
+}
 
 @ObjectType()
 export class Layer extends Typegoose {
@@ -25,7 +39,7 @@ export class Layer extends Typegoose {
 
   @Field()
   @Property()
-  description!: string;
+  description?: string;
 
   @Field(() => User)
   @Property({ required: true, ref: User })
@@ -42,6 +56,10 @@ export class Layer extends Typegoose {
   @Field(() => [User])
   @Properties({ itemsRef: { name: 'User' } })
   subscribers?: Ref<User[]>;
+
+  @Field(() => GraphQLJSON)
+  @Properties({ items: Array })
+  properties?: LayerProperty[];
 }
 
 export type LayerDocument = Layer & Document;

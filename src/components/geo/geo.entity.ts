@@ -22,8 +22,7 @@ export class Geometry {
 
   @Field(() => GeometryCoords)
   @Properties({ items: Array })
-  coords!: Position | Position[] | Position[][] | Position[][][];
-
+  coordinates!: Position | Position[] | Position[][] | Position[][][];
 }
 
 @ObjectType()

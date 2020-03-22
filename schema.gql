@@ -42,9 +42,17 @@ input GeoInput {
   layer: ID!
 }
 
+input GeoInputExtended {
+  geometry: GeometryInput!
+  properties: JSON!
+  layer: ID!
+  author: ID!
+  access: UserType!
+}
+
 type Geometry {
   type: GeometryType!
-  coords: GeometryCoords!
+  coordinates: GeometryCoords!
 }
 
 """Coordinates scalar type"""
@@ -52,7 +60,7 @@ scalar GeometryCoords
 
 input GeometryInput {
   type: GeometryType!
-  coords: GeometryCoords!
+  coordinates: GeometryCoords!
 }
 
 enum GeometryType {
@@ -84,17 +92,20 @@ type Layer {
   access: UserType!
   city: String!
   subscribers: [User!]!
+  properties: [JSON!]!
 }
 
 input LayerInput {
   name: String!
   description: String!
   city: String!
+  properties: [JSON!]!
 }
 
 type Mutation {
   createLayer(layerInput: LayerInput!): Layer!
   createGeo(geoInput: GeoInput!): Geo!
+  createGeos(geoInput: [GeoInputExtended!]!): Boolean!
   authGoogle(code: String!): AuthResponse!
 }
 

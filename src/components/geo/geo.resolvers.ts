@@ -1,14 +1,14 @@
 import { Arg, Ctx, FieldResolver, ID, Mutation, Query, Resolver, Root } from 'type-graphql';
-import { Geo, GeoDocument, GeoInput, GeoModel } from '.';
+import { Geo, GeoDocument, GeoInput, GeoInputExtended, GeoModel } from '.';
 import { User, UserModel } from '../user';
 import { Layer, LayerModel } from '../layer';
 import { Context } from '$types/index';
 import { checkAuth } from '$middleware/auth';
 
-@Resolver(of => Geo)
+@Resolver(() => Geo)
 export class GeoResolvers {
 
-  @Query(returns => [Geo])
+  @Query(() => [Geo])
   async geos(
     @Arg('layerId', () => ID) layerId: Layer,
     @Ctx() { ctx }: { ctx: Context }
@@ -25,9 +25,9 @@ export class GeoResolvers {
     }
   }
 
-  @Mutation(returns => Geo)
+  @Mutation(() => Geo)
   async createGeo(
-    @Arg('geoInput', type => GeoInput) { properties, geometry, layer }: GeoInput,
+    @Arg('geoInput', () => GeoInput) { properties, geometry, layer }: GeoInput,
       @Ctx() { ctx }: { ctx: Context },
   ): Promise<Geo> {
     checkAuth(ctx);
@@ -41,6 +41,20 @@ export class GeoResolvers {
     });
     try {
       return await geo.save();
+    } catch (err) {
+      throw err;
+    }
+  }
+
+  @Mutation(() => Boolean)
+  async createGeos(
+    @Arg('geoInput', () => [GeoInputExtended]) geos: GeoInputExtended[],
+    @Ctx() { ctx }: { ctx: Context },
+  ): Promise<boolean> {
+    checkAuth(ctx);
+    try {
+      await GeoModel.insertMany(geos);
+      return true;
     } catch (err) {
       throw err;
     }

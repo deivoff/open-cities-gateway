@@ -1,5 +1,6 @@
 import { InputType, Field } from 'type-graphql';
-import { Layer } from '.';
+import { Layer, LayerProperty } from '.';
+import { GraphQLJSON } from '$helpers/scalars';
 
 @InputType()
 export class LayerInput implements Partial<Layer> {
@@ -13,4 +14,6 @@ export class LayerInput implements Partial<Layer> {
   @Field()
   city!: string;
 
+  @Field(() => GraphQLJSON)
+  properties!: LayerProperty[]
 }
