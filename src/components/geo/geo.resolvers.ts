@@ -46,15 +46,14 @@ export class GeoResolvers {
     }
   }
 
-  @Mutation(() => Boolean)
+  @Mutation(() => [Geo])
   async createGeos(
     @Arg('geoInput', () => [GeoInputExtended]) geos: GeoInputExtended[],
     @Ctx() { ctx }: { ctx: Context },
-  ): Promise<boolean> {
+  ): Promise<Geo[]> {
     checkAuth(ctx);
     try {
-      await GeoModel.insertMany(geos);
-      return true;
+      return await GeoModel.insertMany(geos);
     } catch (err) {
       throw err;
     }

@@ -105,7 +105,7 @@ input LayerInput {
 type Mutation {
   createLayer(layerInput: LayerInput!): Layer!
   createGeo(geoInput: GeoInput!): Geo!
-  createGeos(geoInput: [GeoInputExtended!]!): Boolean!
+  createGeos(geoInput: [GeoInputExtended!]!): [Geo!]!
   authGoogle(code: String!): AuthResponse!
 }
 
