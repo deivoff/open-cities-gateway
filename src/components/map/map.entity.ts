@@ -1,13 +1,30 @@
 import {
-  prop as Property, Typegoose, Ref, arrayProp as Properties
-} from '@hasezoey/typegoose';
-import { Model, Document } from 'mongoose';
-import { ID, Field, Int } from 'type-graphql';
+  prop as Property, Ref, arrayProp as Properties, getModelForClass, modelOptions,
+} from '@typegoose/typegoose';
+import { ID, Field, Int, ObjectType, InputType } from 'type-graphql';
 import { ObjectId } from 'mongodb';
-import { User, UserType } from '../user';
+import { User } from '../user';
+import { Access } from '$components/access';
+import { GeometryCoords, Position } from '$components/geo';
+import { Layer } from '$components/layer';
 
-// eslint-disable-next-line no-shadow
-export class Map extends Typegoose {
+@ObjectType()
+@InputType('MapSettingInput')
+export class MapSettings {
+
+  @Field(() => GeometryCoords)
+  @Properties({ required: true, items: Array })
+  bbox!: Position[];
+
+  @Field(() => Int)
+  @Property({ required: true })
+  zoom!: number;
+
+}
+
+@ObjectType()
+@modelOptions({ schemaOptions: { timestamps: true} })
+export class Map {
 
   @Field(() => ID)
   readonly _id!: ObjectId;
@@ -18,42 +35,34 @@ export class Map extends Typegoose {
   @Field(() => Date)
   readonly updatedAt!: Date;
 
-  @Field()
-  @Property({ required: true })
-  name!: string;
-
   @Field(() => User)
   @Property({ required: true, ref: User })
   owner!: Ref<User>;
 
-  @Field(() => [User])
-  @Properties({ itemsRef: User })
-  subscribers!: Ref<User>[];
+  @Field()
+  @Property({ required: true })
+  name!: string;
 
   @Field()
   @Property()
-  geoSettings!: string;
+  description?: string;
 
-  @Property()
-  constants: any;
+  @Field(() => Access)
+  @Property({ required: true, _id: false })
+  access!: Access;
 
-  @Field()
-  @Property()
-  description!: string;
+  @Field(() => MapSettings)
+  @Property({ required: true, _id: false })
+  settings!: MapSettings;
 
-  @Property()
-  tags!: string[];
+  @Field(() => [Layer])
+  @Properties({ ref: Layer })
+  layers?: Ref<Layer>[];
 
   @Field(() => Boolean)
   @Property()
-  draft!: boolean;
-
-  @Field(type => UserType)
-  @Property({ required: true, enum: UserType })
-  access!: UserType;
+  draft?: boolean;
 
 }
 
-export type MapDocument = Map & Document;
-export type MapModel = Model<MapDocument>;
-export const MapModel: MapModel = new Map().getModelForClass(Map, { schemaOptions: { timestamps: true } });
+export const MapModel = getModelForClass(Map);

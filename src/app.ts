@@ -13,8 +13,7 @@ import { CityResolvers } from '$components/city';
 import { GeoResolvers } from '$components/geo';
 import { LayerResolvers } from '$components/layer';
 import { AuthResolvers } from '$components/auth';
-// import { MapResolvers } from './components/map';
-
+import { MapResolvers } from '$components/map';
 
 import { oauthHandler } from '$helpers/oauth';
 import { isAuth } from '$middleware/auth';
@@ -36,7 +35,7 @@ export const createApp = async () => {
       GeoResolvers,
       LayerResolvers,
       AuthResolvers,
-      // MapResolvers
+      MapResolvers
     ],
     emitSchemaFile: true,
     validate: false,

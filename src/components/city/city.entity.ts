@@ -1,13 +1,12 @@
 import {
-  ObjectType, Field, ID, Int
+  ObjectType, Field, ID
 } from 'type-graphql';
-import { Typegoose, prop as Property, arrayProp as Properties } from '@hasezoey/typegoose';
-import { Model, Document } from 'mongoose';
 import { ObjectId } from 'mongodb';
-import { GeometryCoords } from '../geo';
+import { getModelForClass, prop as Property, Ref } from '@typegoose/typegoose';
+import { Map } from '$components/map';
 
 @ObjectType()
-export class City extends Typegoose {
+export class City {
 
   @Field(() => ID)
   readonly _id!: ObjectId;
@@ -24,16 +23,10 @@ export class City extends Typegoose {
   @Property({ required: true })
   photo!: string;
 
-  @Field(type => GeometryCoords)
-  @Properties({ items: Array })
-  center!: Position;
-
-  @Field(type => Int)
-  @Property({ required: true })
-  zoom!: number;
+  @Field(() => Map)
+  @Property({ ref: Map})
+  map!: Ref<Map>
 
 }
 
-export type CityDocument = City & Document;
-export type CityModel = Model<CityDocument>;
-export const CityModel: CityModel = new City().getModelForClass(City);
+export const CityModel = getModelForClass(City);

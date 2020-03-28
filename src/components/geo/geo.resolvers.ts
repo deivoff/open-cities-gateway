@@ -1,5 +1,5 @@
 import { Arg, Ctx, FieldResolver, ID, Mutation, Query, Resolver, Root } from 'type-graphql';
-import { Geo, GeoDocument, GeoInput, GeoInputExtended, GeoModel } from '.';
+import { Geo, GeoInput, GeoModel } from '.';
 import { User, UserModel } from '../user';
 import { Layer, LayerModel } from '../layer';
 import { Context } from '$types/index';
@@ -14,11 +14,9 @@ export class GeoResolvers {
     @Ctx() { ctx }: { ctx: Context }
   ): Promise<Geo[]> {
     checkAuth(ctx);
-    const { decodedUser } = ctx.state;
     try {
       return await GeoModel.find({
         layer: layerId,
-        access: decodedUser!.access
       });
     } catch (error) {
       throw error;
@@ -48,7 +46,7 @@ export class GeoResolvers {
 
   @Mutation(() => [Geo])
   async createGeos(
-    @Arg('geoInput', () => [GeoInputExtended]) geos: GeoInputExtended[],
+    @Arg('geoInput', () => [GeoInput]) geos: GeoInput[],
     @Ctx() { ctx }: { ctx: Context },
   ): Promise<Geo[]> {
     checkAuth(ctx);
@@ -60,7 +58,7 @@ export class GeoResolvers {
   }
 
   @FieldResolver(() => User)
-  async author(@Root() geo: GeoDocument): Promise<User> {
+  async author(@Root() geo: Geo): Promise<User> {
     try {
       const { author } = geo;
       return (await UserModel.findById(author))!;
@@ -70,7 +68,7 @@ export class GeoResolvers {
   }
 
   @FieldResolver(() => Layer)
-  async layer(@Root() geo: GeoDocument): Promise<Layer> {
+  async layer(@Root() geo: Geo): Promise<Layer> {
     try {
       const { layer } = geo;
       console.log(layer);

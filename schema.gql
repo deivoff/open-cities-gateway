@@ -3,6 +3,28 @@
 # !!!   DO NOT MODIFY THIS FILE BY YOURSELF   !!!
 # -----------------------------------------------
 
+type Access {
+  view: AccessSettings!
+  edit: AccessSettings!
+  comment: AccessSettings!
+  coowner: AccessSettingsCoowner!
+}
+
+type AccessSettings {
+  anyone: Boolean
+  group: [User!]
+  role: UserType
+}
+
+type AccessSettingsCoowner {
+  group: [User!]
+}
+
+enum AccessType {
+  default
+  city
+}
+
 type AuthRedirect {
   url: String!
 }
@@ -16,8 +38,7 @@ type City {
   name: String!
   url: String!
   photo: String!
-  center: GeometryCoords!
-  zoom: Int!
+  map: Map!
 }
 
 """
@@ -31,7 +52,7 @@ type Geo {
   updatedAt: DateTime!
   author: User!
   layer: Layer!
-  access: UserType!
+  access: Access!
   geometry: Geometry!
   properties: JSON!
 }
@@ -40,14 +61,6 @@ input GeoInput {
   geometry: GeometryInput!
   properties: JSON!
   layer: ID!
-}
-
-input GeoInputExtended {
-  geometry: GeometryInput!
-  properties: JSON!
-  layer: ID!
-  author: ID!
-  access: UserType!
 }
 
 type Geometry {
@@ -89,10 +102,8 @@ type Layer {
   name: String!
   description: String!
   owner: User!
-  access: UserType!
-  city: String!
-  subscribers: [User!]!
-  properties: [JSON!]!
+  access: Access!
+  settings: [JSON!]!
 }
 
 input LayerInput {
@@ -102,19 +113,50 @@ input LayerInput {
   properties: [JSON!]!
 }
 
+type Map {
+  _id: ID!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  owner: User!
+  name: String!
+  description: String!
+  access: Access!
+  settings: MapSettings!
+  layers: [Layer!]!
+  draft: Boolean!
+}
+
+input MapInput {
+  name: String!
+  description: String!
+  settings: MapSettingInput!
+}
+
+input MapSettingInput {
+  bbox: [GeometryCoords!]!
+  zoom: Int!
+}
+
+type MapSettings {
+  bbox: [GeometryCoords!]!
+  zoom: Int!
+}
+
 type Mutation {
   createLayer(layerInput: LayerInput!): Layer!
   createGeo(geoInput: GeoInput!): Geo!
-  createGeos(geoInput: [GeoInputExtended!]!): [Geo!]!
+  createGeos(geoInput: [GeoInput!]!): [Geo!]!
+  createMap(type: AccessType, mapInput: MapInput!): Map!
   authGoogle(code: String!): AuthResponse!
 }
 
 type Query {
   getUsers: [User!]!
-  layers(city: String!): [Layer!]!
+  layers(mapId: String!): [Layer!]!
   geos(layerId: ID!): [Geo!]!
+  maps(userId: String!): [Map!]!
   cities: [City!]!
-  getCity(url: String!): City
+  city(url: String!): City
   getGoogleOAuthRedirect: AuthRedirect!
 }
 
@@ -141,7 +183,7 @@ type UserSocial {
 }
 
 enum UserType {
-  user
-  researcher
   admin
+  researcher
+  user
 }

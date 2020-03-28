@@ -1,16 +1,14 @@
 import {
-  prop as Property, Typegoose, Ref, arrayProp as Properties
-} from '@hasezoey/typegoose';
-import {
   ObjectType, ID, Field, InputType, Float, Int
 } from 'type-graphql';
 import { ObjectId } from 'mongodb';
-import { Model, Document } from 'mongoose';
 import { GeoJsonProperties } from 'geojson';
-import { User, UserType } from '../user';
+import { User } from '../user';
 import { GeometryType, GeometryCoords, Position } from '.';
 import { GraphQLJSON } from '$helpers/scalars';
 import { Layer } from '../layer';
+import { modelOptions, prop as Property, Ref, arrayProp as Properties, getModelForClass } from '@typegoose/typegoose';
+import { Access } from '$components/access';
 
 @ObjectType()
 @InputType('GeometryInput')
@@ -26,7 +24,8 @@ export class Geometry {
 }
 
 @ObjectType()
-export class Geo extends Typegoose {
+@modelOptions({ schemaOptions: { timestamps: true} })
+export class Geo {
 
   @Field(() => ID)
   readonly _id!: ObjectId;
@@ -45,9 +44,9 @@ export class Geo extends Typegoose {
   @Property({ required: true, ref: Layer })
   layer!: Ref<Layer>;
 
-  @Field(() => UserType)
-  @Property({ required: true, enum: UserType })
-  access!: UserType;
+  @Field(() => Access)
+  @Property({ required: true, _id: false })
+  access!: Access;
 
   @Field(() => Geometry)
   @Property({ required: true, _id: false })
@@ -69,6 +68,4 @@ export class GeoSum extends Geo {
 
 }
 
-export type GeoDocument = Geo & Document;
-export type GeoModel = Model<GeoDocument>;
-export const GeoModel: GeoModel = new Geo().getModelForClass(Geo, { schemaOptions: { timestamps: true } });
+export const GeoModel = getModelForClass(Geo);

@@ -14,7 +14,7 @@ export class CityResolvers {
   }
 
   @Query(() => City, { nullable: true })
-  async getCity(
+  async city(
     @Arg('url') url: string
   ): Promise<City | null> {
     try {

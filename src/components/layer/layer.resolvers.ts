@@ -1,28 +1,28 @@
 import { Arg, Ctx, FieldResolver, Mutation, Query, Resolver, Root } from 'type-graphql';
-import { Layer, LayerDocument, LayerInput, LayerModel } from '.';
-import { User, UserModel, UserType } from '../user';
+import { Layer, LayerInput, LayerModel } from '.';
+import { User, UserModel } from '../user';
 import { Context } from '$types/index';
 import { checkAuth } from '$middleware/auth';
 
 @Resolver(() => Layer)
 export class LayerResolvers {
 
-  @Query(returns => [Layer])
-  async layers(@Arg('city') city: string, @Ctx() { ctx }: { ctx: Context }): Promise<Layer[]> {
+  @Query(() => [Layer])
+  async layers(@Arg('mapId') mapId: string, @Ctx() { ctx }: { ctx: Context }): Promise<Layer[]> {
     try {
       const { decodedUser } = ctx.state;
       if (decodedUser) {
-        return await LayerModel.find({ access: decodedUser.access, city });
+        return await LayerModel.find();
       }
-      return (await LayerModel.find({ access: UserType.user, city }))!;
+      return (await LayerModel.find())!;
     } catch (error) {
       throw error;
     }
   }
 
-  @Mutation(returns => Layer)
+  @Mutation(() => Layer)
   async createLayer(
-    @Arg('layerInput', type => LayerInput) layerInput: LayerInput,
+    @Arg('layerInput', () => LayerInput) layerInput: LayerInput,
       @Ctx() { ctx }: { ctx: Context },
   ): Promise<Layer> {
     checkAuth(ctx);
@@ -40,7 +40,7 @@ export class LayerResolvers {
   }
 
   @FieldResolver(() => User)
-  async owner(@Root() layer: LayerDocument): Promise<User> {
+  async owner(@Root() layer: Layer): Promise<User> {
     try {
       const { owner } = layer;
       return (await UserModel.findById(owner))!;

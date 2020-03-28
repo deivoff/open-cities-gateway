@@ -1,13 +1,9 @@
 import {
-  arrayProp as Properties,
-  instanceMethod,
+  arrayProp as Properties, getModelForClass,
   prop as Property,
-  staticMethod,
-  Typegoose,
-} from '@hasezoey/typegoose';
+} from '@typegoose/typegoose';
 import jwt from 'jsonwebtoken';
 import path from 'path';
-import { Document, Model } from 'mongoose';
 import { Field, ID, ObjectType } from 'type-graphql';
 
 import { ObjectId } from 'mongodb';
@@ -16,7 +12,7 @@ import { AuthData } from '../auth';
 
 require('dotenv').config({ path: path.join(`${__dirname}./../../../.env`) });
 @ObjectType()
-export class UserPhoto extends Typegoose {
+export class UserPhoto {
 
   @Field(() => String)
   @Property({ required: true })
@@ -25,7 +21,7 @@ export class UserPhoto extends Typegoose {
 }
 
 @ObjectType()
-class GoogleProvider extends Typegoose {
+class GoogleProvider {
 
   @Field()
   @Property({ required: true })
@@ -38,7 +34,7 @@ class GoogleProvider extends Typegoose {
 }
 
 @ObjectType()
-class UserSocial extends Typegoose {
+class UserSocial {
 
   @Field(() => GoogleProvider)
   @Property({ _id: false })
@@ -47,7 +43,7 @@ class UserSocial extends Typegoose {
 }
 
 @ObjectType()
-export class UserName extends Typegoose {
+export class UserName {
 
   @Field(() => String)
   @Property({ required: true })
@@ -60,7 +56,7 @@ export class UserName extends Typegoose {
 }
 
 @ObjectType()
-export class User extends Typegoose {
+export class User {
 
   @Field(() => ID)
   readonly _id!: ObjectId;
@@ -85,7 +81,6 @@ export class User extends Typegoose {
   @Property({ _id: false })
   social!: UserSocial;
 
-  @instanceMethod
   generateJWT() {
     const today = new Date();
     const expirationDate = new Date(today);
@@ -104,7 +99,6 @@ export class User extends Typegoose {
     );
   }
 
-  @staticMethod
   static async upsetGoogleUser({ accessToken, refreshToken, profile: {
     email, name, id, photo
   } }: AuthData) {
@@ -131,9 +125,4 @@ export class User extends Typegoose {
 
 }
 
-export type UserDocument = User & Document;
-export interface UserModel extends Model<UserDocument> {
-  upsetGoogleUser: (data: AuthData) => Promise<UserDocument>;
-  generateJWT: () => string;
-}
-export const UserModel: UserModel = new User().getModelForClass(User);
+export const UserModel = getModelForClass(User);

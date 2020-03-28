@@ -14,8 +14,8 @@
     "lint:fix": "npm run lint -- --fix"
   },
   "dependencies": {
-    "@hasezoey/typegoose": "^5.9.2",
     "@koa/cors": "^3.0.0",
+    "@typegoose/typegoose": "^6.4.0",
     "@types/morgan": "^1.9.0",
     "apollo-server": "^2.11.0",
     "apollo-server-koa": "^2.11.0",
@@ -38,8 +38,7 @@
     "morgan": "^1.10.0",
     "reflect-metadata": "^0.1.13",
     "tslib": "^1.11.1",
-    "type-graphql": "^0.17.6",
-    "typegoose": "^5.9.1"
+    "type-graphql": "^0.17.6"
   },
   "devDependencies": {
     "@neutrinojs/airbnb": "9.1.0",
@@ -54,8 +53,8 @@
     "@types/lodash": "^4.14.149",
     "@types/mongoose": "^5.7.7",
     "@types/node": "^13.9.2",
-    "@typescript-eslint/eslint-plugin": "2.24.0",
-    "@typescript-eslint/parser": "2.24.0",
+    "@typescript-eslint/eslint-plugin": "2.25.0",
+    "@typescript-eslint/parser": "2.25.0",
     "eslint": "6.8.0",
     "eslint-config-airbnb-typescript": "7.2.0",
     "eslint-import-resolver-typescript": "2.0.0",
@@ -63,9 +62,9 @@
     "eslint-plugin-security": "1.4.0",
     "neutrino": "9.1.0",
     "terser-webpack-plugin": "2.3.5",
-    "ts-loader": "6.2.1",
+    "ts-loader": "6.2.2",
     "typescript": "3.8.3",
-    "webpack": "4.42.0",
+    "webpack": "4.42.1",
     "webpack-cli": "3.3.11",
     "webpack-node-externals": "1.7.2"
   }

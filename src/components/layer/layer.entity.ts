@@ -1,13 +1,13 @@
 import {
-  prop as Property, Typegoose, Ref, arrayProp as Properties
-} from '@hasezoey/typegoose';
+  prop as Property, Ref, arrayProp as Properties, modelOptions, getModelForClass,
+} from '@typegoose/typegoose';
 import { ObjectType, Field, ID } from 'type-graphql';
 import { ObjectId } from 'mongodb';
-import { Model, Document } from 'mongoose';
-import { User, UserType } from '../user';
+import { User } from '../user';
 import { GraphQLJSON } from '$helpers/scalars';
+import { Access } from '$components/access';
 
-export class LayerProperty {
+export class LayerSettings {
   @Property({ required: true })
   key!: string;
 
@@ -18,11 +18,12 @@ export class LayerProperty {
   type!: string;
 
   @Properties({ items: Array })
-  nested?: Ref<LayerProperty>[];
+  nested?: LayerSettings[];
 }
 
 @ObjectType()
-export class Layer extends Typegoose {
+@modelOptions({ schemaOptions: { timestamps: true} })
+export class Layer {
 
   @Field(() => ID)
   readonly _id!: ObjectId;
@@ -45,23 +46,13 @@ export class Layer extends Typegoose {
   @Property({ required: true, ref: User })
   owner!: Ref<User>;
 
-  @Field(() => UserType)
-  @Property({ required: true, enum: UserType })
-  access!: UserType;
-
-  @Field()
-  @Property({ required: true })
-  city!: string;
-
-  @Field(() => [User])
-  @Properties({ itemsRef: { name: 'User' } })
-  subscribers?: Ref<User[]>;
+  @Field(() => Access)
+  @Property({ required: true, _id: false })
+  access!: Access;
 
   @Field(() => GraphQLJSON)
   @Properties({ items: Array })
-  properties?: LayerProperty[];
+  settings?: LayerSettings[];
 }
 
-export type LayerDocument = Layer & Document;
-export type LayerModel = Model<LayerDocument>;
-export const LayerModel: LayerModel = new Layer().getModelForClass(Layer, { schemaOptions: { timestamps: true } });
+export const LayerModel = getModelForClass(Layer);
