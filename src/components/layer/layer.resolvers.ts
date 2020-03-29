@@ -1,9 +1,11 @@
-import { Arg, Ctx, FieldResolver, Mutation, Query, Resolver, Root } from 'type-graphql';
+import { Arg, Ctx, FieldResolver, ID, Mutation, Query, Resolver, Root } from 'type-graphql';
 import { Layer, LayerInput, LayerModel } from '.';
 import { userLoader } from '../user';
 import { Context } from '$types/index';
 import { checkAuth } from '$middleware/auth';
 import { ObjectId } from 'mongodb';
+import { MapModel } from '$components/map/map.entity';
+import { getDefaultAccessSettings } from '$components/access';
 
 @Resolver(() => Layer)
 export class LayerResolvers {
@@ -24,6 +26,7 @@ export class LayerResolvers {
   @Mutation(() => Layer)
   async createLayer(
     @Arg('layerInput', () => LayerInput) layerInput: LayerInput,
+      @Arg('mapId', () => ID) mapId: string,
       @Ctx() { ctx }: { ctx: Context },
   ): Promise<Layer> {
     checkAuth(ctx);
@@ -31,10 +34,12 @@ export class LayerResolvers {
     const layer = new LayerModel({
       ...layerInput,
       owner: decodedUser!.id,
-      access: decodedUser!.access,
+      access: getDefaultAccessSettings(),
     });
     try {
-      return await layer.save();
+      const savedLayer = await layer.save();
+      await MapModel.findByIdAndUpdate(mapId, { $push: { layers: mapId } });
+      return savedLayer;
     } catch (err) {
       throw err;
     }

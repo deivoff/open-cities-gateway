@@ -11,7 +11,7 @@ export class GeoInput implements Partial<Geo> {
   geometry!: Geometry;
 
   @Field(() => GraphQLJSON)
-  properties!: GeoJsonProperties;
+  settings!: GeoJsonProperties;
 
   @Field(() => ID)
   layer!: Layer;

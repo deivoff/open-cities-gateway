@@ -50,16 +50,17 @@ type Geo {
   _id: ID!
   createdAt: DateTime!
   updatedAt: DateTime!
-  author: User!
+  owner: User!
   layer: Layer!
   access: Access!
   geometry: Geometry!
-  properties: JSON!
+  settings: JSON!
+  author: User!
 }
 
 input GeoInput {
   geometry: GeometryInput!
-  properties: JSON!
+  settings: JSON!
   layer: ID!
 }
 
@@ -109,7 +110,6 @@ type Layer {
 input LayerInput {
   name: String!
   description: String!
-  map: ID!
   properties: [JSON!]!
 }
 
@@ -143,7 +143,7 @@ type MapSettings {
 }
 
 type Mutation {
-  createLayer(layerInput: LayerInput!): Layer!
+  createLayer(mapId: ID!, layerInput: LayerInput!): Layer!
   createGeo(geoInput: GeoInput!): Geo!
   createGeos(geoInput: [GeoInput!]!): [Geo!]!
   createMap(type: AccessType, mapInput: MapInput!): Map!

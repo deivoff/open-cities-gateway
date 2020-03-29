@@ -38,7 +38,7 @@ export class Geo {
 
   @Field(() => User)
   @Property({ required: true, ref: User })
-  author!: Ref<User>;
+  owner!: Ref<User>;
 
   @Field(() => Layer)
   @Property({ required: true, ref: Layer })
@@ -54,7 +54,7 @@ export class Geo {
 
   @Field(() => GraphQLJSON)
   @Property()
-  properties?: GeoJsonProperties;
+  settings?: GeoJsonProperties;
 
 }
 

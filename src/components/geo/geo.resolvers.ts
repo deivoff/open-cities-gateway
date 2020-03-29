@@ -25,16 +25,16 @@ export class GeoResolvers {
 
   @Mutation(() => Geo)
   async createGeo(
-    @Arg('geoInput', () => GeoInput) { properties, geometry, layer }: GeoInput,
+    @Arg('geoInput', () => GeoInput) { settings, geometry, layer }: GeoInput,
       @Ctx() { ctx }: { ctx: Context },
   ): Promise<Geo> {
     checkAuth(ctx);
     const { decodedUser } = ctx.state;
     const geo = new GeoModel({
-      properties,
+      settings,
       geometry,
       layer,
-      author: decodedUser!.id,
+      owner: decodedUser!.id,
       access: decodedUser!.access,
     });
     try {
@@ -60,8 +60,8 @@ export class GeoResolvers {
   @FieldResolver(() => User)
   async author(@Root() geo: Geo): Promise<User> {
     try {
-      const { author } = geo;
-      return (await UserModel.findById(author))!;
+      const { owner } = geo;
+      return (await UserModel.findById(owner))!;
     } catch (error) {
       throw error;
     }
