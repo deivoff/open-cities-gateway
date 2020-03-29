@@ -1,5 +1,5 @@
 import {
-  prop as Property, Ref, arrayProp as Properties, getModelForClass, modelOptions,
+  prop as Property, Ref, arrayProp as Properties, getModelForClass, modelOptions, ReturnModelType,
 } from '@typegoose/typegoose';
 import { ID, Field, Int, ObjectType, InputType } from 'type-graphql';
 import { ObjectId } from 'mongodb';
@@ -65,4 +65,5 @@ export class Map {
 
 }
 
-export const MapModel = getModelForClass(Map);
+export type MapModel = ReturnModelType<typeof Map>;
+export const MapModel: MapModel = getModelForClass(Map);

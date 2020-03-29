@@ -1,5 +1,5 @@
 import {
-  prop as Property, Ref, arrayProp as Properties, modelOptions, getModelForClass,
+  prop as Property, Ref, arrayProp as Properties, modelOptions, getModelForClass, ReturnModelType,
 } from '@typegoose/typegoose';
 import { ObjectType, Field, ID } from 'type-graphql';
 import { ObjectId } from 'mongodb';
@@ -54,5 +54,5 @@ export class Layer {
   @Properties({ items: Array })
   settings?: LayerSettings[];
 }
-
-export const LayerModel = getModelForClass(Layer);
+export type LayerModel = ReturnModelType<typeof Layer>;
+export const LayerModel: LayerModel = getModelForClass(Layer);

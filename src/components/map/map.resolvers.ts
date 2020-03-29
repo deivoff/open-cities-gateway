@@ -10,6 +10,17 @@ import { layerLoader } from '$components/layer';
 
 @Resolver(() => Map)
 export class MapResolvers {
+  @Query(() => Map, {nullable: true})
+  async map(
+    @Arg('id') id: string
+  ): Promise<Map | null> {
+    try {
+      return await MapModel.findById(id);
+    } catch (error) {
+      throw error;
+    }
+  }
+
   @Query(() => [Map])
   async maps(@Arg('userId') userId: string): Promise<Map[]> {
     try {
@@ -40,12 +51,12 @@ export class MapResolvers {
   }
 
   @FieldResolver()
-  async owner(@Root() map: Map) {
-    return await userLoader.load(map.owner as ObjectId);
+  async owner(@Root() { owner }: MapModel) {
+    return await userLoader.load(owner as ObjectId);
   }
 
   @FieldResolver()
-  async layers(@Root() map: Map) {
-    return await layerLoader.loadMany(map.layers as ObjectId[]);
+  async layers(@Root() { layers}: MapModel) {
+    return await layerLoader.loadMany(layers as ObjectId[]);
   }
 }

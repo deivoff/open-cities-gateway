@@ -11,9 +11,7 @@ export class LayerInput implements Partial<Layer> {
   @Field()
   description!: string;
 
-  @Field()
-  city!: string;
-
   @Field(() => GraphQLJSON)
   properties!: LayerSettings[]
+
 }

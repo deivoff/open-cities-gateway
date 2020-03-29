@@ -2,7 +2,7 @@ import {
   ObjectType, Field, ID
 } from 'type-graphql';
 import { ObjectId } from 'mongodb';
-import { getModelForClass, prop as Property, Ref } from '@typegoose/typegoose';
+import { getModelForClass, prop as Property, Ref, ReturnModelType } from '@typegoose/typegoose';
 import { Map } from '$components/map';
 
 @ObjectType()
@@ -29,4 +29,5 @@ export class City {
 
 }
 
-export const CityModel = getModelForClass(City);
+export type CityModel = ReturnModelType< typeof City>
+export const CityModel: CityModel = getModelForClass(City);

@@ -3,11 +3,11 @@ import { Resolver, Query } from 'type-graphql';
 import { User } from '.';
 import { UserModel } from './user.entity';
 
-@Resolver(of => User)
+@Resolver(() => User)
 export class UserResolvers {
 
-  @Query(returns => [User])
-  async getUsers(): Promise<User[]> {
+  @Query(() => [User])
+  async users(): Promise<User[]> {
     try {
       return await UserModel.find();
     } catch (error) {

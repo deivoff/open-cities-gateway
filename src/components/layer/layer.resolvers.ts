@@ -1,8 +1,9 @@
 import { Arg, Ctx, FieldResolver, Mutation, Query, Resolver, Root } from 'type-graphql';
 import { Layer, LayerInput, LayerModel } from '.';
-import { User, UserModel } from '../user';
+import { userLoader } from '../user';
 import { Context } from '$types/index';
 import { checkAuth } from '$middleware/auth';
+import { ObjectId } from 'mongodb';
 
 @Resolver(() => Layer)
 export class LayerResolvers {
@@ -39,14 +40,9 @@ export class LayerResolvers {
     }
   }
 
-  @FieldResolver(() => User)
-  async owner(@Root() layer: Layer): Promise<User> {
-    try {
-      const { owner } = layer;
-      return (await UserModel.findById(owner))!;
-    } catch (error) {
-      throw error;
-    }
+  @FieldResolver()
+  async owner(@Root() { owner }: LayerModel) {
+    return await userLoader.load(owner as ObjectId);
   }
 
 }

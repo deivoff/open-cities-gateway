@@ -109,7 +109,7 @@ type Layer {
 input LayerInput {
   name: String!
   description: String!
-  city: String!
+  map: ID!
   properties: [JSON!]!
 }
 
@@ -151,9 +151,10 @@ type Mutation {
 }
 
 type Query {
-  getUsers: [User!]!
+  users: [User!]!
   layers(mapId: String!): [Layer!]!
   geos(layerId: ID!): [Geo!]!
+  map(id: String!): Map
   maps(userId: String!): [Map!]!
   cities: [City!]!
   city(url: String!): City

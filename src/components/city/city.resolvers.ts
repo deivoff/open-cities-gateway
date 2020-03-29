@@ -1,5 +1,7 @@
-import { Resolver, Query, Arg } from 'type-graphql';
+import { Resolver, Query, Arg, FieldResolver, Root } from 'type-graphql';
 import { City, CityModel } from '.';
+import { ObjectId } from 'mongodb';
+import { mapLoader } from '$components/map';
 
 @Resolver(() => City)
 export class CityResolvers {
@@ -24,4 +26,8 @@ export class CityResolvers {
     }
   }
 
+  @FieldResolver()
+  async map(@Root() { map }: CityModel) {
+    return await mapLoader.load(map as ObjectId);
+  }
 }
