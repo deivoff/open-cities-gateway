@@ -104,13 +104,13 @@ type Layer {
   description: String!
   owner: User!
   access: Access!
-  settings: [JSON!]!
+  settings: JSON!
 }
 
 input LayerInput {
   name: String!
   description: String!
-  properties: [JSON!]!
+  settings: JSON!
 }
 
 type Map {

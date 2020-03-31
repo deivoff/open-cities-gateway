@@ -10,7 +10,7 @@ import { layerLoader } from '$components/layer';
 
 @Resolver(() => Map)
 export class MapResolvers {
-  @Query(() => Map, {nullable: true})
+  @Query(() => Map, { nullable: true })
   async map(
     @Arg('id') id: string
   ): Promise<Map | null> {
