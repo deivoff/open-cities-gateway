@@ -19,7 +19,7 @@ import { oauthHandler } from '$helpers/oauth';
 import { isAuth } from '$middleware/auth';
 import { Context } from '$types/index';
 
-const config = process.env.NODE_ENV === 'development' && require('dotenv').config({ path: path.join(`${__dirname}./../.env`) });
+process.env.NODE_ENV === 'development' && require('dotenv').config({ path: path.join(`${__dirname}./../.env`) });
 
 export const createApp = async () => {
   const app = new Koa();
@@ -78,12 +78,22 @@ export const createApp = async () => {
   server.applyMiddleware({ app, path: '/graphql' });
 
   try {
-    await mongoose.connect(`${process.env.DB_URL}`, {
+    const {
+      'NODE_ENV': env,
+      'DB_NAME': dbName,
+      'DB_URL': dbUrl,
+      'DB_PASS': pass,
+      'DB_USER': user,
+    } = process.env;
+
+    await mongoose.connect(`${dbUrl}`, {
       useNewUrlParser: true,
-      dbName: `${process.env.DB_NAME}`,
       useUnifiedTopology: true,
+      dbName,
+      user,
+      pass,
     });
-    process.env.NODE_ENV === ('development' || 'test') && mongoose.set('debug', true);
+    env === ('development' || 'test') && mongoose.set('debug', true);
     console.log('MongoDB Connected');
   } catch (error) {
     console.log(error);
@@ -91,3 +101,4 @@ export const createApp = async () => {
 
   return app;
 };
+
