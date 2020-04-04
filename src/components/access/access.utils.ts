@@ -29,5 +29,7 @@ export function getDefaultAccessSettings(type?: AccessType): Access {
 }
 
 export function getUserAccess({ role, id }) {
+  return {
 
+  }
 }

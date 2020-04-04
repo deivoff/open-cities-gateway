@@ -13,6 +13,7 @@ export class LayerResolvers {
   @Query(() => [Layer])
   async layers(@Arg('mapId') mapId: string, @Ctx() { ctx }: { ctx: Context }): Promise<Layer[]> {
     try {
+      checkAuth(ctx);
       const { decodedUser } = ctx.state;
       if (decodedUser) {
         return await LayerModel.find();

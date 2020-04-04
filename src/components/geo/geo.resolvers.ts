@@ -10,10 +10,8 @@ export class GeoResolvers {
 
   @Query(() => [Geo])
   async geos(
-    @Arg('layerId', () => ID) layerId: Layer,
-    @Ctx() { ctx }: { ctx: Context }
+    @Arg('layerId', () => ID) layerId: Layer
   ): Promise<Geo[]> {
-    checkAuth(ctx);
     try {
       return await GeoModel.find({
         layer: layerId,
