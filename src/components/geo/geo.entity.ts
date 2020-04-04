@@ -8,7 +8,6 @@ import { GeometryType, GeometryCoords, Position } from '.';
 import { GraphQLJSON } from '$helpers/scalars';
 import { Layer } from '../layer';
 import { modelOptions, prop as Property, Ref, arrayProp as Properties, getModelForClass } from '@typegoose/typegoose';
-import { Access } from '$components/access';
 
 @ObjectType()
 @InputType('GeometryInput')
@@ -19,7 +18,7 @@ export class Geometry {
   type!: GeometryType;
 
   @Field(() => GeometryCoords)
-  @Properties({ items: Array })
+  @Properties({ items: Number })
   coordinates!: Position | Position[] | Position[][] | Position[][][];
 }
 
@@ -44,17 +43,13 @@ export class Geo {
   @Property({ required: true, ref: Layer })
   layer!: Ref<Layer>;
 
-  @Field(() => Access)
-  @Property({ required: true, _id: false })
-  access!: Access;
-
   @Field(() => Geometry)
   @Property({ required: true, _id: false })
   geometry!: Geometry;
 
   @Field(() => GraphQLJSON)
   @Property()
-  settings?: GeoJsonProperties;
+  properties?: GeoJsonProperties;
 
 }
 

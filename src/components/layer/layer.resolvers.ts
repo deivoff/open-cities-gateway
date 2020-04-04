@@ -38,7 +38,7 @@ export class LayerResolvers {
     });
     try {
       const savedLayer = await layer.save();
-      await MapModel.findByIdAndUpdate(mapId, { $push: { layers: mapId } });
+      await MapModel.findByIdAndUpdate(mapId, { $push: { layers: savedLayer._id } });
       return savedLayer;
     } catch (err) {
       throw err;

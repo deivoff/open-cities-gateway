@@ -52,15 +52,14 @@ type Geo {
   updatedAt: DateTime!
   owner: User!
   layer: Layer!
-  access: Access!
   geometry: Geometry!
-  settings: JSON!
+  properties: JSON!
   author: User!
 }
 
 input GeoInput {
   geometry: GeometryInput!
-  settings: JSON!
+  properties: JSON!
   layer: ID!
 }
 
