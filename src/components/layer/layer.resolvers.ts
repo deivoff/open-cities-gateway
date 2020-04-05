@@ -1,6 +1,6 @@
 import { Arg, Ctx, FieldResolver, ID, Mutation, Query, Resolver, Root } from 'type-graphql';
 import { Layer, LayerInput, LayerModel } from '.';
-import { userLoader } from '../user';
+import { userLoader, UserType } from '../user';
 import { Context } from '$types/index';
 import { checkAuth } from '$middleware/auth';
 import { ObjectId } from 'mongodb';
@@ -32,6 +32,9 @@ export class LayerResolvers {
   ): Promise<Layer> {
     checkAuth(ctx);
     const { decodedUser } = ctx.state;
+    if (decodedUser?.access === UserType.user) {
+      throw new Error("Access denied");
+    }
     const layer = new LayerModel({
       ...layerInput,
       owner: decodedUser!.id,

@@ -15,6 +15,7 @@
   },
   "dependencies": {
     "@koa/cors": "^3.0.0",
+    "@sentry/node": "^5.15.4",
     "@typegoose/typegoose": "^6.4.0",
     "@types/morgan": "^1.9.0",
     "apollo-server": "^2.11.0",
@@ -43,6 +44,7 @@
   "devDependencies": {
     "@neutrinojs/airbnb": "9.1.0",
     "@neutrinojs/node": "9.1.0",
+    "@sentry/webpack-plugin": "^1.10.0",
     "@types/bcrypt": "^3.0.0",
     "@types/geojson": "^7946.0.7",
     "@types/graphql": "^14.5.0",
