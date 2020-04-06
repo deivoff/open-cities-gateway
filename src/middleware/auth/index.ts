@@ -2,6 +2,9 @@ import jwt from 'jsonwebtoken';
 import path from 'path';
 import { Context } from '$types/index';
 import { DecodedToken } from '$components/auth';
+import { AuthChecker } from 'type-graphql';
+import { UserType } from '$components/user';
+
 
 require('dotenv').config({ path: path.join(`${__dirname}./../../../.env`) });
 
@@ -35,8 +38,13 @@ export const isAuth = async (ctx: Context, next: () => Promise<any>) => {
   return await next();
 };
 
-export const checkAuth = (ctx: Context) => {
-  if (!ctx.state.isAuth) {
-    throw new Error('Unauthenticated');
-  }
+export const authChecker: AuthChecker<{ ctx: Context }, UserType> = ({ context: { ctx: { state} }}, roles) => {
+  if (!state.isAuth) return false;
+
+  if (roles.length === 0) return true;
+
+  if (state.decodedUser?.access === UserType.admin) return true;
+
+  return roles.includes(<UserType>state.decodedUser?.access);
+
 };

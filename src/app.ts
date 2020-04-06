@@ -17,8 +17,8 @@ import { AuthResolvers } from '$components/auth';
 import { MapResolvers } from '$components/map';
 
 import { oauthHandler } from '$helpers/oauth';
-import { isAuth } from '$middleware/auth';
 import { Context } from '$types/index';
+import { authChecker, isAuth } from '$middleware/auth';
 
 process.env.NODE_ENV === 'development' && require('dotenv').config({ path: path.join(`${__dirname}./../.env`) });
 
@@ -48,6 +48,9 @@ export const createApp = async () => {
   // OAUTH
   router.get('/oauth/*', oauthHandler);
 
+  app.use(logger());
+  app.use(isAuth);
+
   const schema = await buildSchema({
     resolvers: [
       UserResolvers,
@@ -59,9 +62,8 @@ export const createApp = async () => {
     ],
     emitSchemaFile: true,
     validate: false,
+    authChecker,
   });
-
-  //
 
   app.use(
     cors({
@@ -83,8 +85,6 @@ export const createApp = async () => {
 
     await next();
   });
-  app.use(logger());
-  app.use(isAuth);
 
   const server = new ApolloServer({
     schema,

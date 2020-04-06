@@ -1,8 +1,7 @@
-import { Arg, Ctx, FieldResolver, ID, Mutation, Query, Resolver, Root } from 'type-graphql';
+import { Arg, Authorized, Ctx, FieldResolver, ID, Mutation, Query, Resolver, Root } from 'type-graphql';
 import { Layer, LayerInput, LayerModel } from '.';
 import { userLoader, UserType } from '../user';
 import { Context } from '$types/index';
-import { checkAuth } from '$middleware/auth';
 import { ObjectId } from 'mongodb';
 import { MapModel } from '$components/map/map.entity';
 import { getDefaultAccessSettings } from '$components/access';
@@ -10,10 +9,10 @@ import { getDefaultAccessSettings } from '$components/access';
 @Resolver(() => Layer)
 export class LayerResolvers {
 
+  @Authorized()
   @Query(() => [Layer])
   async layers(@Arg('mapId') mapId: string, @Ctx() { ctx }: { ctx: Context }): Promise<Layer[]> {
     try {
-      checkAuth(ctx);
       const { decodedUser } = ctx.state;
       if (decodedUser) {
         return await LayerModel.find();
@@ -24,17 +23,15 @@ export class LayerResolvers {
     }
   }
 
+  @Authorized([UserType.researcher])
   @Mutation(() => Layer)
   async createLayer(
     @Arg('layerInput', () => LayerInput) layerInput: LayerInput,
       @Arg('mapId', () => ID) mapId: string,
       @Ctx() { ctx }: { ctx: Context },
   ): Promise<Layer> {
-    checkAuth(ctx);
     const { decodedUser } = ctx.state;
-    if (decodedUser?.access === UserType.user) {
-      throw new Error("Access denied");
-    }
+
     const layer = new LayerModel({
       ...layerInput,
       owner: decodedUser!.id,

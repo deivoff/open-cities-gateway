@@ -1,9 +1,8 @@
-import { Arg, Ctx, FieldResolver, ID, Mutation, Query, Resolver, Root } from 'type-graphql';
+import { Arg, Authorized, Ctx, FieldResolver, ID, Mutation, Query, Resolver, Root } from 'type-graphql';
 import { Geo, GeoInput, GeoModel } from '.';
 import { User, UserModel } from '../user';
 import { Layer, LayerModel } from '../layer';
 import { Context } from '$types/index';
-import { checkAuth } from '$middleware/auth';
 
 @Resolver(() => Geo)
 export class GeoResolvers {
@@ -21,12 +20,12 @@ export class GeoResolvers {
     }
   }
 
+  @Authorized()
   @Mutation(() => Geo)
   async createGeo(
     @Arg('geoInput', () => GeoInput) geoInput: GeoInput,
       @Ctx() { ctx }: { ctx: Context },
   ): Promise<Geo> {
-    checkAuth(ctx);
     const { decodedUser } = ctx.state;
     const geo = new GeoModel({
       ...geoInput,
@@ -39,12 +38,12 @@ export class GeoResolvers {
     }
   }
 
+  @Authorized()
   @Mutation(() => [Geo])
   async createGeos(
     @Arg('geoInput', () => [GeoInput]) geos: GeoInput[],
     @Ctx() { ctx }: { ctx: Context },
   ): Promise<Geo[]> {
-    checkAuth(ctx);
     try {
       const geosWithOwner = geos.map(geo => ({
         ...geo,
