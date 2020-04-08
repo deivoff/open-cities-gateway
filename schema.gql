@@ -7,17 +7,17 @@ type Access {
   view: AccessSettings!
   edit: AccessSettings!
   comment: AccessSettings!
-  coowner: AccessSettingsCoowner!
+  coowner: AccessGroup!
+}
+
+type AccessGroup {
+  group: [User!]
 }
 
 type AccessSettings {
+  group: [User!]
   anyone: Boolean
-  group: [User!]
   role: UserType
-}
-
-type AccessSettingsCoowner {
-  group: [User!]
 }
 
 enum AccessType {
