@@ -4,7 +4,7 @@ import { GraphQLResolveInfo } from 'graphql';
 import { ApolloContext } from '$types/index';
 import { getUserLoader, USER_ROLE } from '$components/user';
 import { MapModel } from '$components/map';
-import { getDefaultAccessSettings } from '$components/access';
+import { getAccessCode, getDefaultAccessSettings } from '$components/access';
 import { Layer, LayerInput, LayerModel } from '.';
 
 @Resolver(() => Layer)
@@ -29,7 +29,7 @@ export class LayerResolvers {
     @Arg('layerInput', () => LayerInput) layerInput: LayerInput,
     @Arg('mapId', () => ID) mapId: string,
     @Ctx() { state }: ApolloContext,
-  ): Promise<Layer> {
+  ) {
     const { decodedUser } = state;
 
     const layer = new LayerModel({
@@ -47,8 +47,16 @@ export class LayerResolvers {
   }
 
   @FieldResolver()
+  access(
+    @Root() { _access }: Layer,
+    @Ctx() context: ApolloContext,
+  ) {
+    return getAccessCode(_access, context.state?.decodedUser);
+  }
+
+  @FieldResolver()
   async owner(
-    @Root() { owner }: LayerModel,
+    @Root() { owner }: Layer,
     @Ctx() context: ApolloContext,
     @Info() info: GraphQLResolveInfo,
   ) {

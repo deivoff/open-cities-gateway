@@ -1,8 +1,6 @@
-import path from 'path';
 // eslint-disable-next-line @typescript-eslint/camelcase
 import { google, plus_v1 } from 'googleapis';
-
-require('dotenv').config({ path: path.join(`${__dirname}./../../../../.env`) });
+import CONFIG from '$configs/index';
 
 export class GoogleOAuth {
 
@@ -10,11 +8,7 @@ export class GoogleOAuth {
   /** CONFIGURATION * */
   /** **************** */
 
-  googleConfig = {
-    clientId: process.env.GOOGLE_CLIENT_ID!, // e.g. asdfghjkljhgfdsghjk.apps.googleusercontent.com
-    clientSecret: process.env.GOOGLE_CLIENT_SECRET!, // e.g. _ASDFA%DFASDFASDFASD#FAD-
-    redirectUrl: process.env.GOOGLE_REDIRECT_URL,
-  };
+  googleConfig = CONFIG.googleConfig;
 
   defaultScope = [
     'https://www.googleapis.com/auth/plus.me',

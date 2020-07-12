@@ -1,12 +1,10 @@
 import jwt from 'jsonwebtoken';
-import path from 'path';
 import { Context } from '$types/index';
 import { DecodedToken } from '$components/auth';
 import { AuthChecker } from 'type-graphql';
 import { USER_ROLE } from '$components/user';
 
-
-require('dotenv').config({ path: path.join(`${__dirname}./../../../.env`) });
+import CONFIG from '$configs/index';
 
 export const isAuth = async (ctx: Context, next: () => Promise<any>) => {
   const authHeader = ctx.header.authorization;
@@ -22,7 +20,7 @@ export const isAuth = async (ctx: Context, next: () => Promise<any>) => {
   }
   let decodedToken: string | object;
   try {
-    decodedToken = jwt.verify(token, process.env.SECRET_KEY!);
+    decodedToken = jwt.verify(token, CONFIG.secretKey!);
   } catch {
     ctx.state.isAuth = false;
     return await next();

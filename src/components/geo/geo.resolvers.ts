@@ -1,9 +1,10 @@
 import { Arg, Authorized, Ctx, FieldResolver, ID, Info, Mutation, Query, Resolver, Root } from 'type-graphql';
 import { Geo, GeoInput, GeoModel } from '.';
 import { getUserLoader, User } from '../user';
-import { Layer, LayerModel } from '../layer';
+import { getLayerLoader, Layer } from '../layer';
 import { ApolloContext } from '$types/index';
 import { ObjectId } from 'mongodb';
+import { GraphQLResolveInfo } from 'graphql';
 
 @Resolver(() => Geo)
 export class GeoResolvers {
@@ -26,7 +27,7 @@ export class GeoResolvers {
   async createGeo(
     @Arg('geoInput', () => GeoInput) geoInput: GeoInput,
       @Ctx() { state }: ApolloContext,
-  ): Promise<Geo> {
+  ) {
     const { decodedUser } = state;
     const geo = new GeoModel({
       ...geoInput,
@@ -58,19 +59,27 @@ export class GeoResolvers {
 
   @FieldResolver(() => User)
   async owner(
-    @Root() { owner }: GeoModel,
+    @Root() { owner }: Geo,
     @Ctx() context: ApolloContext,
-    @Info() info,
+    @Info() info: GraphQLResolveInfo,
   ) {
     const dl = getUserLoader(info.fieldNodes, context);
-    return await dl.load(owner as ObjectId);
+    try {
+      return await dl.load(owner as ObjectId);
+    } catch (e) {
+      throw e;
+    }
   }
 
   @FieldResolver(() => Layer)
-  async layer(@Root() geo: Geo): Promise<Layer> {
+  async layer(
+    @Root() { layer}: Geo,
+    @Ctx() context: ApolloContext,
+    @Info() info: GraphQLResolveInfo,
+  ) {
+    const dl = getLayerLoader(info.fieldNodes, context);
     try {
-      const { layer } = geo;
-      return (await LayerModel.findById(layer))!;
+      return await dl.load(layer as ObjectId);
     } catch (error) {
       throw error;
     }

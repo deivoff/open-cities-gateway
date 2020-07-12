@@ -1,10 +1,13 @@
 import DataLoader from 'dataloader';
 import { ObjectId } from 'mongodb';
 
-import { MapModel } from '.';
+import { Map, MapModel } from '.';
 import { ApolloContext } from '$types/index';
 
-export const getMapLoader = (key, { dataloaders, state}: ApolloContext) => {
+export const getMapLoader = (
+  key,
+  { dataloaders, state}: ApolloContext
+): DataLoader<string | ObjectId, Map> => {
   let dl = dataloaders.get(key);
 
   if (!dl) {

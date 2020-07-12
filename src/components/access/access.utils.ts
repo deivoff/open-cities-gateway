@@ -1,4 +1,4 @@
-import { Access, ACCESS_CODE, AccessType } from '.';
+import { Access, ACCESS_CODE, ACCESS_FIELDS, AccessType } from '.';
 import { USER_ROLE } from '$components/user';
 import { ObjectId } from 'mongodb';
 
@@ -29,6 +29,25 @@ export function getDefaultAccessSettings(type?: AccessType): Access {
   }
 }
 
+export function checkAccess(access: Access, user?: { access: USER_ROLE, id: string | ObjectId }) {
+  return ACCESS_FIELDS.some(key => {
+    if (access[key].anyone) {
+      return true
+    }
+
+    if (user) {
+      if (access[key].group?.includes(user.id)) {
+        return true;
+      }
+
+      if (access[key].role === user.access) {
+        return true;
+      }
+    }
+
+    return false;
+  })
+}
 
 export function getAccessCode(access: Access, user?: { access: USER_ROLE, id: string | ObjectId }) {
   let accessCode: ACCESS_CODE = ACCESS_CODE.NONE;

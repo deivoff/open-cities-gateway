@@ -20,7 +20,8 @@
       "$types/*": ["types/*"],
       "$components/*": ["src/components/*"],
       "$helpers/*": ["src/helpers/*"],
-      "$middleware/*": ["src/middleware/*"]
+      "$middleware/*": ["src/middleware/*"],
+      "$configs/*": ["src/configs/*"]
     }
   }
 }

@@ -29,5 +29,5 @@ export class City {
 
 }
 
-export type CityModel = ReturnModelType< typeof City>
+export type CityModel = ReturnModelType<typeof City>
 export const CityModel: CityModel = getModelForClass(City);

@@ -1,5 +1,5 @@
 import {
-  arrayProp as Properties, getModelForClass,
+  getModelForClass,
   prop as Property,
 } from '@typegoose/typegoose';
 import jwt from 'jsonwebtoken';
@@ -74,7 +74,7 @@ export class User {
   role!: USER_ROLE;
 
   @Field(() => [UserPhoto])
-  @Properties({ items: UserPhoto, _id: false })
+  @Property({ items: UserPhoto, _id: false })
   photos?: UserPhoto[];
 
   @Field(() => UserSocial)

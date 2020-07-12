@@ -13,6 +13,8 @@ export enum ACCESS_CODE {
   COOWNER,
 }
 
+export const ACCESS_FIELDS = ['view', 'comment', 'edit', 'coowner'];
+
 registerEnumType(AccessType, {
   name: 'AccessType', // this one is mandatory
 });

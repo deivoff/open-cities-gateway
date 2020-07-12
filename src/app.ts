@@ -1,14 +1,16 @@
 import 'reflect-metadata';
-import path from 'path';
 import logger from 'koa-logger';
 import mongoose from 'mongoose';
 import cors from '@koa/cors';
 import bodyParser from 'koa-bodyparser';
 import Koa from 'koa';
-import KoaRouter from 'koa-router';
+import KoaRouter from '@koa/router';
 import * as Sentry from '@sentry/node';
 import { ApolloServer } from 'apollo-server-koa';
 import { buildSchema } from 'type-graphql';
+
+import CONFIG from '$configs/index';
+
 import { UserResolvers } from '$components/user';
 import { CityResolvers } from '$components/city';
 import { GeoResolvers } from '$components/geo';
@@ -18,20 +20,10 @@ import { MapResolvers } from '$components/map';
 
 import { oauthHandler } from '$helpers/oauth';
 import { ApolloContext, Context } from '$types/index';
-import { authChecker, isAuth } from '$middleware/auth';
+import { authChecker, isAuth, TypegooseMiddleware } from '$middleware/index';
 
-process.env.NODE_ENV === 'development' && require('dotenv').config({ path: path.join(`${__dirname}./../.env`) });
 
 export const createApp = async () => {
-  const {
-    'NODE_ENV': env,
-    'DB_NAME': dbName,
-    'DB_URL': dbUrl,
-    'DB_PASS': pass,
-    'DB_USER': user,
-    'ORIGIN_URL': originUrl,
-  } = process.env;
-
   const app = new Koa();
   const router = new KoaRouter();
 
@@ -46,7 +38,7 @@ export const createApp = async () => {
   });
 
   // OAUTH
-  router.get('/oauth/*', oauthHandler);
+  router.get('/oauth/(.*)', oauthHandler);
 
   app.use(logger());
   app.use(isAuth);
@@ -62,12 +54,15 @@ export const createApp = async () => {
     ],
     emitSchemaFile: true,
     validate: false,
+    globalMiddlewares: [
+      TypegooseMiddleware,
+    ],
     authChecker,
   });
 
   app.use(
     cors({
-      origin: originUrl,
+      origin: CONFIG.originUrl,
       credentials: true,
     }),
   );
@@ -93,7 +88,7 @@ export const createApp = async () => {
       request,
       dataloaders: new WeakMap(),
     }),
-    playground: env === 'development',
+    playground: CONFIG.env === 'development',
     introspection: true,
   });
   app.use(router.routes());
@@ -102,14 +97,14 @@ export const createApp = async () => {
   server.applyMiddleware({ app, path: '/graphql' });
 
   try {
-    await mongoose.connect(`${dbUrl}`, {
+    await mongoose.connect(`${CONFIG.dbUrl}`, {
       useNewUrlParser: true,
       useUnifiedTopology: true,
-      dbName,
-      user,
-      pass,
+      dbName: CONFIG.dbName,
+      user: CONFIG.dbUser,
+      pass: CONFIG.dbPass,
     });
-    env === ('development' || 'test') && mongoose.set('debug', true);
+    CONFIG.env === ('development' || 'test') && mongoose.set('debug', true);
     console.log('MongoDB Connected');
   } catch (error) {
     console.error(error);

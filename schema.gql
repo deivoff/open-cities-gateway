@@ -3,34 +3,17 @@
 # !!!   DO NOT MODIFY THIS FILE BY YOURSELF   !!!
 # -----------------------------------------------
 
-type Access {
-  view: AccessSettings!
-  edit: AccessSettings!
-  comment: AccessSettings!
-  coowner: AccessGroup!
-}
-
 enum ACCESS_CODE {
+  COMMENT
+  COOWNER
+  EDIT
   NONE
   VIEW
-  COMMENT
-  EDIT
-  COOWNER
-}
-
-type AccessGroup {
-  group: [User!]
-}
-
-type AccessSettings {
-  group: [User!]
-  anyone: Boolean
-  role: USER_ROLE
 }
 
 enum AccessType {
-  default
   city
+  default
 }
 
 type AuthRedirect {
@@ -43,10 +26,10 @@ type AuthResponse {
 
 type City {
   _id: ID!
-  name: String!
-  url: String!
-  photo: String!
   map: Map!
+  name: String!
+  photo: String!
+  url: String!
 }
 
 """
@@ -57,39 +40,39 @@ scalar DateTime
 type Geo {
   _id: ID!
   createdAt: DateTime!
-  updatedAt: DateTime!
-  owner: User!
-  layer: Layer!
   geometry: Geometry!
+  layer: Layer!
+  owner: User!
   properties: JSON!
+  updatedAt: DateTime!
 }
 
 input GeoInput {
   geometry: GeometryInput!
-  properties: JSON!
   layer: ID!
+  properties: JSON!
 }
 
 type Geometry {
-  type: GeometryType!
   coordinates: GeometryCoords!
+  type: GeometryType!
 }
 
 """Coordinates scalar type"""
 scalar GeometryCoords
 
 input GeometryInput {
-  type: GeometryType!
   coordinates: GeometryCoords!
+  type: GeometryType!
 }
 
 enum GeometryType {
-  Point
-  MultiPoint
   LineString
   MultiLineString
-  Polygon
+  MultiPoint
   MultiPolygon
+  Point
+  Polygon
 }
 
 type GoogleProvider {
@@ -104,75 +87,75 @@ scalar JSON
 
 type Layer {
   _id: ID!
-  createdAt: DateTime!
-  updatedAt: DateTime!
-  name: String!
-  description: String!
-  owner: User!
   access: ACCESS_CODE!
+  createdAt: DateTime!
+  description: String!
+  name: String!
+  owner: User!
   settings: JSON!
+  updatedAt: DateTime!
 }
 
 input LayerInput {
-  name: String!
   description: String!
+  name: String!
   settings: JSON!
 }
 
 type Map {
   _id: ID!
-  createdAt: DateTime!
-  updatedAt: DateTime!
-  owner: User!
-  name: String!
-  description: String!
   access: ACCESS_CODE!
-  settings: MapSettings!
-  layers: [Layer!]!
+  createdAt: DateTime!
+  description: String!
   draft: Boolean!
+  layers: [Layer!]!
+  name: String!
+  owner: User!
+  settings: MapSettings!
+  updatedAt: DateTime!
 }
 
 input MapInput {
-  name: String!
   description: String!
+  name: String!
   settings: MapSettingInput!
 }
 
 input MapSettingInput {
-  bbox: [GeometryCoords!]!
+  bbox: GeometryCoords!
   zoom: Int!
 }
 
 type MapSettings {
-  bbox: [GeometryCoords!]!
+  bbox: GeometryCoords!
   zoom: Int!
 }
 
 type Mutation {
-  createLayer(mapId: ID!, layerInput: LayerInput!): Layer!
+  authGoogle(code: String!): AuthResponse!
   createGeo(geoInput: GeoInput!): Geo!
   createGeos(geoInput: [GeoInput!]!): [Geo!]!
-  createMap(type: AccessType, mapInput: MapInput!): Map!
-  authGoogle(code: String!): AuthResponse!
+  createLayer(layerInput: LayerInput!, mapId: ID!): Layer!
+  createMap(mapInput: MapInput!, type: AccessType): Map!
 }
 
 type Query {
-  users: [User!]!
-  layers(mapId: ID!): [Layer!]!
-  geos(layerId: ID!): [Geo!]!
-  map(id: String!): Map
-  maps(userId: ID!): [Map!]!
   cities: [City!]!
   city(url: String!): City
+  geos(layerId: ID!): [Geo!]!
   getGoogleOAuthRedirect: AuthRedirect!
+  layers(mapId: ID!): [Layer!]!
+  map(mapId: ID!): Map
+  maps(userId: ID!): [Map!]!
+  users: [User!]!
 }
 
 type User {
   _id: ID!
   email: String!
   name: UserName!
-  role: USER_ROLE!
   photos: [UserPhoto!]!
+  role: USER_ROLE!
   social: UserSocial!
 }
 

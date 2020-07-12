@@ -1,7 +1,6 @@
 import {
   DocumentType,
   getModelForClass,
-  mapProp as MapProperty,
   modelOptions,
   prop as Property,
   Ref,
@@ -11,7 +10,7 @@ import { Field, ID, ObjectType } from 'type-graphql';
 import { ObjectId } from 'mongodb';
 import { User } from '../user';
 import { GraphQLJSON } from '$helpers/scalars';
-import { Access, ACCESS_CODE, getAccessCode } from '$components/access';
+import { Access, ACCESS_CODE, checkAccess, getAccessCode } from '$components/access';
 import { DecodedToken } from '$components/auth';
 
 export class LayerNestedSetting {
@@ -30,7 +29,7 @@ export class LayerNestedSetting {
 
 export class LayerSetting extends LayerNestedSetting{
 
-  @MapProperty({ of: LayerNestedSetting })
+  @Property({ of: LayerNestedSetting })
   nested?: Map<string, LayerNestedSetting>
 
 }
@@ -67,7 +66,7 @@ export class Layer {
   access?: ACCESS_CODE;
 
   @Field(() => GraphQLJSON)
-  @MapProperty({ of: LayerSetting })
+  @Property({ type: LayerSetting })
   settings?: Map<string, LayerSetting>;
 
   static getAllowed = (
@@ -78,10 +77,9 @@ export class Layer {
     const layers = await LayerModel.find(...parameters);
     return layers.reduce((acc, layer) => {
       let { _access } = layer;
-      const accessCode = getAccessCode(_access, user);
+      const accessExist = checkAccess(_access, user);
 
-      if (accessCode) {
-        layer.access = accessCode;
+      if (accessExist) {
         acc.push(layer);
       }
 

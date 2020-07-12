@@ -1,19 +1,18 @@
-import {
-  ObjectType, ID, Field, InputType, Float, Int
-} from 'type-graphql';
+import { Field, Float, ID, InputType, Int, ObjectType } from 'type-graphql';
 import { ObjectId } from 'mongodb';
 import { GeoJsonProperties } from 'geojson';
 import { User } from '../user';
-import { GeometryType, GeometryCoords, Position } from '.';
+import { GeometryCoords, GeometryType, Position } from '.';
 import { GraphQLJSON } from '$helpers/scalars';
 import { Layer } from '../layer';
 import {
+  getModelForClass,
   modelOptions,
+  mongoose,
   prop as Property,
   Ref,
-  arrayProp as Properties,
-  getModelForClass,
   ReturnModelType,
+  Severity,
 } from '@typegoose/typegoose';
 
 @ObjectType()
@@ -25,12 +24,12 @@ export class Geometry {
   type!: GeometryType;
 
   @Field(() => GeometryCoords)
-  @Properties({ items: Number })
+  @Property({ type: mongoose.Schema.Types.Mixed })
   coordinates!: Position | Position[] | Position[][] | Position[][][];
 }
 
 @ObjectType()
-@modelOptions({ schemaOptions: { timestamps: true} })
+@modelOptions({ schemaOptions: { timestamps: true }, options: { allowMixed: Severity.ALLOW } })
 export class Geo {
 
   @Field(() => ID)
@@ -55,7 +54,7 @@ export class Geo {
   geometry!: Geometry;
 
   @Field(() => GraphQLJSON)
-  @Property()
+  @Property({ type: mongoose.Schema.Types.Mixed })
   properties?: GeoJsonProperties;
 
 }

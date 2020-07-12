@@ -30,7 +30,7 @@ export class CityResolvers {
 
   @FieldResolver()
   async map(
-    @Root() { map }: CityModel,
+    @Root() { map }: City,
     @Ctx() context: ApolloContext,
     @Info() info: GraphQLResolveInfo,
   ) {

@@ -7,7 +7,7 @@ import { UserModel } from './user.entity';
 export class UserResolvers {
 
   @Query(() => [User])
-  async users(): Promise<User[]> {
+  async users() {
     try {
       return await UserModel.find();
     } catch (error) {
