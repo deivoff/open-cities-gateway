@@ -7,7 +7,14 @@ import { User } from '../user';
 import { GeometryType, GeometryCoords, Position } from '.';
 import { GraphQLJSON } from '$helpers/scalars';
 import { Layer } from '../layer';
-import { modelOptions, prop as Property, Ref, arrayProp as Properties, getModelForClass } from '@typegoose/typegoose';
+import {
+  modelOptions,
+  prop as Property,
+  Ref,
+  arrayProp as Properties,
+  getModelForClass,
+  ReturnModelType,
+} from '@typegoose/typegoose';
 
 @ObjectType()
 @InputType('GeometryInput')
@@ -63,4 +70,5 @@ export class GeoSum extends Geo {
 
 }
 
-export const GeoModel = getModelForClass(Geo);
+export type GeoModel = ReturnModelType<typeof Geo>;
+export const GeoModel: GeoModel = getModelForClass(Geo);

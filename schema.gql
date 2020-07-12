@@ -10,6 +10,14 @@ type Access {
   coowner: AccessGroup!
 }
 
+enum ACCESS_CODE {
+  NONE
+  VIEW
+  COMMENT
+  EDIT
+  COOWNER
+}
+
 type AccessGroup {
   group: [User!]
 }
@@ -17,7 +25,7 @@ type AccessGroup {
 type AccessSettings {
   group: [User!]
   anyone: Boolean
-  role: UserType
+  role: USER_ROLE
 }
 
 enum AccessType {
@@ -54,7 +62,6 @@ type Geo {
   layer: Layer!
   geometry: Geometry!
   properties: JSON!
-  author: User!
 }
 
 input GeoInput {
@@ -102,7 +109,7 @@ type Layer {
   name: String!
   description: String!
   owner: User!
-  access: Access!
+  access: ACCESS_CODE!
   settings: JSON!
 }
 
@@ -119,7 +126,7 @@ type Map {
   owner: User!
   name: String!
   description: String!
-  access: Access!
+  access: ACCESS_CODE!
   settings: MapSettings!
   layers: [Layer!]!
   draft: Boolean!
@@ -151,10 +158,10 @@ type Mutation {
 
 type Query {
   users: [User!]!
-  layers(mapId: String!): [Layer!]!
+  layers(mapId: ID!): [Layer!]!
   geos(layerId: ID!): [Geo!]!
   map(id: String!): Map
-  maps(userId: String!): [Map!]!
+  maps(userId: ID!): [Map!]!
   cities: [City!]!
   city(url: String!): City
   getGoogleOAuthRedirect: AuthRedirect!
@@ -164,9 +171,15 @@ type User {
   _id: ID!
   email: String!
   name: UserName!
-  role: UserType!
+  role: USER_ROLE!
   photos: [UserPhoto!]!
   social: UserSocial!
+}
+
+enum USER_ROLE {
+  ADMIN
+  RESEARCHER
+  USER
 }
 
 type UserName {
@@ -180,10 +193,4 @@ type UserPhoto {
 
 type UserSocial {
   googleProvider: GoogleProvider!
-}
-
-enum UserType {
-  admin
-  researcher
-  user
 }

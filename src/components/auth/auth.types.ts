@@ -1,5 +1,5 @@
 import { ObjectType, Field } from 'type-graphql';
-import { UserName, UserPhoto, UserType } from '../user';
+import { UserName, UserPhoto, USER_ROLE } from '../user';
 
 @ObjectType()
 export class AuthResponse {
@@ -28,6 +28,6 @@ export interface DecodedToken {
   email: string;
   name: UserName;
   photos?: UserPhoto[];
-  access: UserType;
+  access: USER_ROLE;
   exp: number;
 }

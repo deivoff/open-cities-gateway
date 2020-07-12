@@ -1,7 +1,9 @@
-import { Resolver, Query, Arg, FieldResolver, Root } from 'type-graphql';
+import { Resolver, Query, Arg, FieldResolver, Root, Ctx, Info } from 'type-graphql';
 import { City, CityModel } from '.';
 import { ObjectId } from 'mongodb';
-import { mapLoader } from '$components/map';
+import { getMapLoader } from '$components/map';
+import { ApolloContext } from '$types/index';
+import { GraphQLResolveInfo } from 'graphql';
 
 @Resolver(() => City)
 export class CityResolvers {
@@ -27,7 +29,12 @@ export class CityResolvers {
   }
 
   @FieldResolver()
-  async map(@Root() { map }: CityModel) {
-    return await mapLoader.load(map as ObjectId);
+  async map(
+    @Root() { map }: CityModel,
+    @Ctx() context: ApolloContext,
+    @Info() info: GraphQLResolveInfo,
+  ) {
+    const dl = getMapLoader(info.fieldNodes, context);
+    return await dl.load(map as ObjectId);
   }
 }

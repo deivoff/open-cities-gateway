@@ -17,7 +17,7 @@ import { AuthResolvers } from '$components/auth';
 import { MapResolvers } from '$components/map';
 
 import { oauthHandler } from '$helpers/oauth';
-import { Context } from '$types/index';
+import { ApolloContext, Context } from '$types/index';
 import { authChecker, isAuth } from '$middleware/auth';
 
 process.env.NODE_ENV === 'development' && require('dotenv').config({ path: path.join(`${__dirname}./../.env`) });
@@ -88,7 +88,11 @@ export const createApp = async () => {
 
   const server = new ApolloServer({
     schema,
-    context: (ctx: Context) => ctx,
+    context: ({ ctx: { request, state } }: { ctx: Context }): ApolloContext => ({
+      state,
+      request,
+      dataloaders: new WeakMap(),
+    }),
     playground: env === 'development',
     introspection: true,
   });

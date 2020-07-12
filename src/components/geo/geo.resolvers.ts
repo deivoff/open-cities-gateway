@@ -1,8 +1,9 @@
-import { Arg, Authorized, Ctx, FieldResolver, ID, Mutation, Query, Resolver, Root } from 'type-graphql';
+import { Arg, Authorized, Ctx, FieldResolver, ID, Info, Mutation, Query, Resolver, Root } from 'type-graphql';
 import { Geo, GeoInput, GeoModel } from '.';
-import { User, UserModel } from '../user';
+import { getUserLoader, User } from '../user';
 import { Layer, LayerModel } from '../layer';
-import { Context } from '$types/index';
+import { ApolloContext } from '$types/index';
+import { ObjectId } from 'mongodb';
 
 @Resolver(() => Geo)
 export class GeoResolvers {
@@ -24,9 +25,9 @@ export class GeoResolvers {
   @Mutation(() => Geo)
   async createGeo(
     @Arg('geoInput', () => GeoInput) geoInput: GeoInput,
-      @Ctx() { ctx }: { ctx: Context },
+      @Ctx() { state }: ApolloContext,
   ): Promise<Geo> {
-    const { decodedUser } = ctx.state;
+    const { decodedUser } = state;
     const geo = new GeoModel({
       ...geoInput,
       owner: decodedUser!.id,
@@ -42,12 +43,12 @@ export class GeoResolvers {
   @Mutation(() => [Geo])
   async createGeos(
     @Arg('geoInput', () => [GeoInput]) geos: GeoInput[],
-    @Ctx() { ctx }: { ctx: Context },
+    @Ctx() { state }: ApolloContext,
   ): Promise<Geo[]> {
     try {
       const geosWithOwner = geos.map(geo => ({
         ...geo,
-        owner: ctx.state.decodedUser?.id
+        owner: state.decodedUser?.id
       }));
       return await GeoModel.insertMany(geosWithOwner);
     } catch (err) {
@@ -56,13 +57,13 @@ export class GeoResolvers {
   }
 
   @FieldResolver(() => User)
-  async author(@Root() geo: Geo): Promise<User> {
-    try {
-      const { owner } = geo;
-      return (await UserModel.findById(owner))!;
-    } catch (error) {
-      throw error;
-    }
+  async owner(
+    @Root() { owner }: GeoModel,
+    @Ctx() context: ApolloContext,
+    @Info() info,
+  ) {
+    const dl = getUserLoader(info.fieldNodes, context);
+    return await dl.load(owner as ObjectId);
   }
 
   @FieldResolver(() => Layer)

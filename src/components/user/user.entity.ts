@@ -7,7 +7,7 @@ import path from 'path';
 import { Field, ID, ObjectType } from 'type-graphql';
 
 import { ObjectId } from 'mongodb';
-import { UserType } from '.';
+import { USER_ROLE } from '.';
 import { AuthData } from '../auth';
 
 require('dotenv').config({ path: path.join(`${__dirname}./../../../.env`) });
@@ -69,9 +69,9 @@ export class User {
   @Property({ _id: false })
   name!: UserName;
 
-  @Field(() => UserType)
-  @Property({ required: true, enum: UserType })
-  role!: UserType;
+  @Field(() => USER_ROLE)
+  @Property({ required: true, enum: USER_ROLE })
+  role!: USER_ROLE;
 
   @Field(() => [UserPhoto])
   @Properties({ items: UserPhoto, _id: false })
@@ -114,7 +114,7 @@ export class User {
             token: accessToken,
           },
           photos: [{ url: photo }],
-          role: UserType.user,
+          role: USER_ROLE.USER,
         });
       }
       return user;

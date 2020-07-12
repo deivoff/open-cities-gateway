@@ -1,26 +1,26 @@
 import { Field, ObjectType } from 'type-graphql';
 import { arrayProp as Properties, prop as Property, Ref } from '@typegoose/typegoose';
-import { User, UserType } from '$components/user';
+import { User, USER_ROLE } from '$components/user';
 
 @ObjectType()
 abstract class AccessGroup {
 
-  @Field(() => [User], { nullable: true})
-  @Properties({ ref: User })
+  @Field(() => [User], { nullable: true })
+  @Properties({ ref: User, default: [] })
   group?: Ref<User>[];
 
 }
 
 @ObjectType()
-abstract class AccessSettings extends AccessGroup{
+abstract class AccessSettings extends AccessGroup {
 
   @Field(() => Boolean, { nullable: true})
   @Property({ default: false })
   anyone?: boolean;
 
-  @Field(() => UserType, { nullable: true})
-  @Property({ enum: UserType })
-  role?: UserType;
+  @Field(() => USER_ROLE, { nullable: true})
+  @Property({ enum: USER_ROLE })
+  role?: USER_ROLE;
 }
 
 @ObjectType()

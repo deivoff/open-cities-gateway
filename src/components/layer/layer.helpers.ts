@@ -2,11 +2,21 @@ import DataLoader from 'dataloader';
 import { ObjectId } from 'mongodb';
 
 import { LayerModel } from '.';
+import { ApolloContext } from '$types/index';
 
-export const layerLoader = new DataLoader(
-  async (keys: readonly (string | ObjectId)[]) => {
-    const stringKeys = keys.map(key => key.toString());
-    return LayerModel.find({ _id: { $in: stringKeys } });
-  },
-  {cacheKeyFn: key => key.toString()}
-);
+export const getLayerLoader = (key, { dataloaders, state}: ApolloContext) => {
+  let dl = dataloaders.get(key);
+
+  if (!dl) {
+    dl = new DataLoader(async (keys: readonly (string | ObjectId)[]) => {
+      const stringKeys = keys.map(key => key.toString());
+
+
+      return LayerModel.getAllowed(state?.decodedUser)({ _id: { $in: stringKeys } });
+    }, { cacheKeyFn: key => key.toString() });
+
+    dataloaders.set(key, dl);
+  }
+
+  return dl;
+};

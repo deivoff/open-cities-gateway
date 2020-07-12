@@ -1,41 +1,41 @@
-import { Arg, Authorized, Ctx, FieldResolver, ID, Mutation, Query, Resolver, Root } from 'type-graphql';
-import { Layer, LayerInput, LayerModel } from '.';
-import { userLoader, UserType } from '../user';
-import { Context } from '$types/index';
+import { Arg, Authorized, Ctx, FieldResolver, ID, Info, Mutation, Query, Resolver, Root } from 'type-graphql';
 import { ObjectId } from 'mongodb';
-import { MapModel } from '$components/map/map.entity';
+import { GraphQLResolveInfo } from 'graphql';
+import { ApolloContext } from '$types/index';
+import { getUserLoader, USER_ROLE } from '$components/user';
+import { MapModel } from '$components/map';
 import { getDefaultAccessSettings } from '$components/access';
+import { Layer, LayerInput, LayerModel } from '.';
 
 @Resolver(() => Layer)
 export class LayerResolvers {
 
-  @Authorized()
   @Query(() => [Layer])
-  async layers(@Arg('mapId') mapId: string, @Ctx() { ctx }: { ctx: Context }): Promise<Layer[]> {
+  async layers(
+    @Arg('mapId', () => ID) mapId: string,
+    @Ctx() { state }: ApolloContext
+  ) {
     try {
-      const { decodedUser } = ctx.state;
-      if (decodedUser) {
-        return await LayerModel.find();
-      }
-      return (await LayerModel.find())!;
+      // @ts-ignore
+      return await LayerModel.getAllowed(state?.decodedUser)();
     } catch (error) {
       throw error;
     }
   }
 
-  @Authorized([UserType.researcher])
+  @Authorized([USER_ROLE.RESEARCHER])
   @Mutation(() => Layer)
   async createLayer(
     @Arg('layerInput', () => LayerInput) layerInput: LayerInput,
-      @Arg('mapId', () => ID) mapId: string,
-      @Ctx() { ctx }: { ctx: Context },
+    @Arg('mapId', () => ID) mapId: string,
+    @Ctx() { state }: ApolloContext,
   ): Promise<Layer> {
-    const { decodedUser } = ctx.state;
+    const { decodedUser } = state;
 
     const layer = new LayerModel({
       ...layerInput,
       owner: decodedUser!.id,
-      access: getDefaultAccessSettings(),
+      _access: getDefaultAccessSettings(),
     });
     try {
       const savedLayer = await layer.save();
@@ -47,8 +47,13 @@ export class LayerResolvers {
   }
 
   @FieldResolver()
-  async owner(@Root() { owner }: LayerModel) {
-    return await userLoader.load(owner as ObjectId);
+  async owner(
+    @Root() { owner }: LayerModel,
+    @Ctx() context: ApolloContext,
+    @Info() info: GraphQLResolveInfo,
+  ) {
+    const dl = getUserLoader(info.fieldNodes, context);
+    return await dl.load(owner as ObjectId);
   }
 
 }

@@ -1,29 +1,36 @@
-import { Arg, Authorized, Ctx, FieldResolver, Mutation, Query, Resolver, Root } from 'type-graphql';
-import { Map, MapModel } from '.';
-import { userLoader } from '$components/user';
-import { Context } from '$types/index';
-import { MapInput } from '$components/map/map.inputs';
-import { AccessType, getDefaultAccessSettings } from '$components/access';
+import {
+  Arg, Authorized,
+  Ctx, FieldResolver, ID,
+  Info, Mutation,
+  Query, Resolver, Root
+} from 'type-graphql';
+import { GraphQLResolveInfo } from 'graphql';
 import { ObjectId } from 'mongodb';
-import { layerLoader } from '$components/layer';
+import { ApolloContext } from '$types/index';
+import { getUserLoader } from '$components/user';
+import { AccessType, getDefaultAccessSettings } from '$components/access';
+import { getLayerLoader } from '$components/layer';
+import { Map, MapModel, MapInput, getMapLoader } from '.';
 
 @Resolver(() => Map)
 export class MapResolvers {
   @Query(() => Map, { nullable: true })
   async map(
-    @Arg('id') id: string
-  ): Promise<Map | null> {
-    try {
-      return await MapModel.findById(id);
-    } catch (error) {
-      throw error;
-    }
+    @Arg('id') id: ObjectId,
+    @Ctx() context: ApolloContext,
+    @Info() info: GraphQLResolveInfo,
+  ) {
+    const dl = getMapLoader(info.fieldNodes, context);
+    return await dl.load(id);
   }
 
   @Query(() => [Map])
-  async maps(@Arg('userId') userId: string): Promise<Map[]> {
+  async maps(
+    @Arg('userId', () => ID) userId: string,
+    @Ctx() { state }: ApolloContext
+    ): Promise<Map[]> {
     try {
-      return await MapModel.find({ owner: userId });
+      return await MapModel.getAllowed(state?.decodedUser)({ owner: userId });
     } catch (error) {
       throw error;
     }
@@ -34,13 +41,13 @@ export class MapResolvers {
   async createMap(
     @Arg('mapInput', () => MapInput) mapInput: MapInput,
     @Arg('type', ()=> AccessType, { nullable: true }) type: AccessType,
-    @Ctx() { ctx }: { ctx: Context },
+    @Ctx() { state }: ApolloContext,
   ): Promise<Map> {
-    const { decodedUser } = ctx.state;
+    const { decodedUser } = state;
     const map = new MapModel({
       ...mapInput,
       owner: decodedUser!.id,
-      access: getDefaultAccessSettings(type),
+      _access: getDefaultAccessSettings(type),
     });
     try {
       return await map.save();
@@ -50,12 +57,22 @@ export class MapResolvers {
   }
 
   @FieldResolver()
-  async owner(@Root() { owner }: MapModel) {
-    return await userLoader.load(owner as ObjectId);
+  async owner(
+    @Root() { owner }: MapModel,
+    @Ctx() context: ApolloContext,
+    @Info() info,
+    ) {
+    const dl = getUserLoader(info.fieldNodes, context);
+    return await dl.load(owner as ObjectId);
   }
 
   @FieldResolver()
-  async layers(@Root() { layers}: MapModel) {
-    return await layerLoader.loadMany(layers as ObjectId[]);
+  async layers(
+    @Root() { layers}: MapModel,
+    @Ctx() context: ApolloContext,
+    @Info() info: GraphQLResolveInfo,
+  ) {
+    const dl = getLayerLoader(info.fieldNodes, context);
+    return await dl.loadMany(layers as ObjectId[]);
   }
 }

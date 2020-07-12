@@ -3,7 +3,7 @@ import path from 'path';
 import { Context } from '$types/index';
 import { DecodedToken } from '$components/auth';
 import { AuthChecker } from 'type-graphql';
-import { UserType } from '$components/user';
+import { USER_ROLE } from '$components/user';
 
 
 require('dotenv').config({ path: path.join(`${__dirname}./../../../.env`) });
@@ -38,13 +38,13 @@ export const isAuth = async (ctx: Context, next: () => Promise<any>) => {
   return await next();
 };
 
-export const authChecker: AuthChecker<{ ctx: Context }, UserType> = ({ context: { ctx: { state} }}, roles) => {
+export const authChecker: AuthChecker<{ ctx: Context }, USER_ROLE> = ({ context: { ctx: { state} }}, roles) => {
   if (!state.isAuth) return false;
 
   if (roles.length === 0) return true;
 
-  if (state.decodedUser?.access === UserType.admin) return true;
+  if (state.decodedUser?.access === USER_ROLE.ADMIN) return true;
 
-  return roles.includes(<UserType>state.decodedUser?.access);
+  return roles.includes(<USER_ROLE>state.decodedUser?.access);
 
 };

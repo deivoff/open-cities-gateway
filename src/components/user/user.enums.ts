@@ -1,11 +1,11 @@
 import { registerEnumType } from 'type-graphql';
 
-export enum UserType {
-  admin = 'admin',
-  researcher = 'researcher',
-  user = 'user',
+export enum USER_ROLE {
+  ADMIN = 'ADMIN',
+  RESEARCHER = 'RESEARCHER',
+  USER = 'USER',
 }
 
-registerEnumType(UserType, {
-  name: 'UserType', // this one is mandatory
+registerEnumType(USER_ROLE, {
+  name: 'USER_ROLE', // this one is mandatory
 });
