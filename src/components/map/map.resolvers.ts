@@ -25,7 +25,8 @@ export class MapResolvers {
     @Ctx() { state }: ApolloContext
     ) {
     try {
-      return await MapModel.getAllowed(state?.decodedUser)({ owner: userId });
+      const maps = await MapModel.getAllowed(state?.decodedUser, { owner: userId });
+      return maps.filter(map => map);
     } catch (error) {
       throw error;
     }
@@ -37,7 +38,7 @@ export class MapResolvers {
     @Arg('mapInput', () => MapInput) mapInput: MapInput,
     @Arg('type', () => AccessType, { nullable: true }) type: AccessType,
     @Ctx() { state }: ApolloContext,
-  ) {
+  ): Promise<Map> {
     const { decodedUser } = state;
     const map = new MapModel({
       ...mapInput,
@@ -45,7 +46,8 @@ export class MapResolvers {
       _access: getDefaultAccessSettings(type),
     });
     try {
-      return await map.save();
+      const savedMap = await map.save();
+      return savedMap.toObject();
     } catch (err) {
       throw err;
     }

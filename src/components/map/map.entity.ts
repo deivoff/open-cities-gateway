@@ -1,10 +1,8 @@
-import {
-  prop as Property, Ref, getModelForClass, modelOptions, ReturnModelType, DocumentType,
-} from '@typegoose/typegoose';
-import { ID, Field, Int, ObjectType, InputType } from 'type-graphql';
+import { DocumentType, getModelForClass, prop as Property, Ref, ReturnModelType } from '@typegoose/typegoose';
+import { Field, ID, InputType, Int, Maybe, ObjectType } from 'type-graphql';
 import { ObjectId } from 'mongodb';
 import { User } from '../user';
-import { Access, ACCESS_CODE, checkAccess, getAccessCode } from '$components/access';
+import { Access, ACCESS_CODE, checkAccess } from '$components/access';
 import { GeometryCoords, Position } from '$components/geo';
 import { Layer } from '$components/layer';
 import { DecodedToken } from '$components/auth';
@@ -65,11 +63,10 @@ export class Map {
   @Property()
   draft?: boolean;
 
-  static getAllowed = (
-    user?: DecodedToken
-  ) => async (
-    ...parameters: Parameters<DocumentType<MapModel>['find']>
-  ) => {
+  static async getAllowed(
+    user?: DecodedToken,
+    ...parameters: Parameters<DocumentType<MapModel>['find']> | any
+  ) {
     const maps = await MapModel.find(...parameters);
     return maps.reduce((acc, map) => {
       const { _access } = map;
@@ -77,10 +74,12 @@ export class Map {
 
       if (accessExist) {
         acc.push(map);
+      } else {
+        acc.push(null);
       }
 
       return acc;
-    }, [] as Map[]);
+    }, [] as Maybe<Map>[]);
   }
 }
 

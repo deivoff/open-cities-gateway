@@ -7,6 +7,7 @@ import { MapModel } from '$components/map';
 import { getAccessCode, getDefaultAccessSettings } from '$components/access';
 import { Layer, LayerInput, LayerModel } from '.';
 
+
 @Resolver(() => Layer)
 export class LayerResolvers {
 
@@ -16,8 +17,8 @@ export class LayerResolvers {
     @Ctx() { state }: ApolloContext
   ) {
     try {
-      // @ts-ignore
-      return await LayerModel.getAllowed(state?.decodedUser)();
+      const layers = await LayerModel.getAllowed(state?.decodedUser);
+      return layers.filter(layer => layer);
     } catch (error) {
       throw error;
     }

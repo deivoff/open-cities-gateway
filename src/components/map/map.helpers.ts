@@ -15,7 +15,7 @@ export const getMapLoader = (
       const stringKeys = keys.map(key => key.toString());
 
 
-      return MapModel.getAllowed(state?.decodedUser)({ _id: { $in: stringKeys } });
+      return MapModel.getAllowed(state?.decodedUser, { _id: { $in: stringKeys } });
     }, { cacheKeyFn: key => key.toString() });
 
     dataloaders.set(key, dl);

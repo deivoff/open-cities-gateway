@@ -15,7 +15,7 @@ export const getLayerLoader = (
       const stringKeys = keys.map(key => key.toString());
 
 
-      return LayerModel.getAllowed(state?.decodedUser)({ _id: { $in: stringKeys } });
+      return LayerModel.getAllowed(state?.decodedUser, { _id: { $in: stringKeys } });
     }, { cacheKeyFn: key => key.toString() });
 
     dataloaders.set(key, dl);

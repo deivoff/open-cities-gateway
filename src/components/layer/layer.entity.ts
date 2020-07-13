@@ -6,11 +6,11 @@ import {
   Ref,
   ReturnModelType,
 } from '@typegoose/typegoose';
-import { Field, ID, ObjectType } from 'type-graphql';
+import { Field, ID, Maybe, ObjectType } from 'type-graphql';
 import { ObjectId } from 'mongodb';
 import { User } from '../user';
 import { GraphQLJSON } from '$helpers/scalars';
-import { Access, ACCESS_CODE, checkAccess, getAccessCode } from '$components/access';
+import { Access, ACCESS_CODE, checkAccess } from '$components/access';
 import { DecodedToken } from '$components/auth';
 
 export class LayerNestedSetting {
@@ -69,11 +69,11 @@ export class Layer {
   @Property({ type: LayerSetting })
   settings?: Map<string, LayerSetting>;
 
-  static getAllowed = (
-    user?: DecodedToken
-  ) => async (
-    ...parameters: Parameters<DocumentType<LayerModel>['find']>
-  ) => {
+
+  static async getAllowed(
+    user?: DecodedToken,
+    ...parameters: (Parameters<DocumentType<LayerModel>['find']>) | any
+  ) {
     const layers = await LayerModel.find(...parameters);
     return layers.reduce((acc, layer) => {
       let { _access } = layer;
@@ -81,10 +81,12 @@ export class Layer {
 
       if (accessExist) {
         acc.push(layer);
+      } else {
+        acc.push(null)
       }
 
       return acc;
-    }, [] as Layer[]);
+    }, [] as Maybe<Layer>[]);
   }
 }
 
