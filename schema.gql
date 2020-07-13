@@ -8,7 +8,8 @@ enum ACCESS_CODE {
   COOWNER
   EDIT
   NONE
-  VIEW
+    OWNER
+    VIEW
 }
 
 enum AccessType {

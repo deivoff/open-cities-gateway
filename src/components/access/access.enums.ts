@@ -11,6 +11,7 @@ export enum ACCESS_CODE {
   COMMENT,
   EDIT,
   COOWNER,
+  OWNER
 }
 
 export const ACCESS_FIELDS = ['view', 'comment', 'edit', 'coowner'];

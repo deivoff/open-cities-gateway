@@ -49,10 +49,13 @@ export class LayerResolvers {
 
   @FieldResolver()
   access(
-    @Root() { _access }: Layer,
+    @Root() { _access, owner }: Layer,
     @Ctx() context: ApolloContext,
   ) {
-    return getAccessCode(_access, context.state?.decodedUser);
+    return getAccessCode({
+      access: _access,
+      owner: owner as ObjectId,
+    }, context.state?.decodedUser);
   }
 
   @FieldResolver()

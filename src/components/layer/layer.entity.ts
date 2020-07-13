@@ -76,8 +76,11 @@ export class Layer {
   ) {
     const layers = await LayerModel.find(...parameters);
     return layers.reduce((acc, layer) => {
-      let { _access } = layer;
-      const accessExist = checkAccess(_access, user);
+      let { _access, owner } = layer;
+      const accessExist = checkAccess({
+        access: _access,
+        owner: owner as ObjectId,
+      }, user);
 
       if (accessExist) {
         acc.push(layer);

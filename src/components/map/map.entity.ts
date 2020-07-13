@@ -69,8 +69,11 @@ export class Map {
   ) {
     const maps = await MapModel.find(...parameters);
     return maps.reduce((acc, map) => {
-      const { _access } = map;
-      const accessExist = checkAccess(_access, user);
+      const { _access, owner } = map;
+      const accessExist = checkAccess({
+        access: _access,
+        owner: owner as ObjectId,
+      }, user);
 
       if (accessExist) {
         acc.push(map);

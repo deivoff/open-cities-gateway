@@ -55,10 +55,13 @@ export class MapResolvers {
 
   @FieldResolver()
   access(
-    @Root() { _access }: Map,
+    @Root() { _access, owner }: Map,
     @Ctx() context: ApolloContext,
   ) {
-    return getAccessCode(_access, context.state?.decodedUser);
+    return getAccessCode({
+      access: _access,
+      owner: owner as ObjectId,
+    }, context.state?.decodedUser);
   }
 
   @FieldResolver()

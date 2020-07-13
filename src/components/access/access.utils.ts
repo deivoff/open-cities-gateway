@@ -25,17 +25,29 @@ export function getDefaultAccessSettings(type?: AccessType): Access {
     },
     comment: {},
     edit: {},
-    coowner: {}
+    coowner: {},
   }
 }
 
-export function checkAccess(access: Access, user?: { access: USER_ROLE, id: string | ObjectId }) {
+type DataWithAccess = {
+  access: Access;
+  owner: string | ObjectId;
+}
+
+export function checkAccess(
+  { access, owner }: DataWithAccess,
+  user?: { access: USER_ROLE, id: string | ObjectId },
+) {
   return ACCESS_FIELDS.some(key => {
     if (access[key].anyone) {
       return true
     }
 
     if (user) {
+      if (user.id === owner.toString()) {
+        return true
+      }
+
       if (access[key].group?.includes(user.id)) {
         return true;
       }
@@ -49,7 +61,10 @@ export function checkAccess(access: Access, user?: { access: USER_ROLE, id: stri
   })
 }
 
-export function getAccessCode(access: Access, user?: { access: USER_ROLE, id: string | ObjectId }) {
+export function getAccessCode(
+  { access, owner }: DataWithAccess,
+  user?: { access: USER_ROLE, id: string | ObjectId },
+) {
   let accessCode: ACCESS_CODE = ACCESS_CODE.NONE;
 
   if (access.view.anyone) {
@@ -61,6 +76,8 @@ export function getAccessCode(access: Access, user?: { access: USER_ROLE, id: st
   }
 
   if (user) {
+
+
     if (
       access.view.role === user.access
       || access.view.group!.includes(user.id as ObjectId)
@@ -91,6 +108,10 @@ export function getAccessCode(access: Access, user?: { access: USER_ROLE, id: st
 
     if (user.access === USER_ROLE.ADMIN) {
       accessCode = ACCESS_CODE.COOWNER;
+    }
+
+    if (user.id === owner.toString()) {
+      accessCode = ACCESS_CODE.OWNER;
     }
 
   }
