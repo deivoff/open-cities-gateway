@@ -1,17 +1,18 @@
-import { Arg, Authorized, Ctx, FieldResolver, ID, Info, Mutation, Query, Resolver, Root } from 'type-graphql';
+import { Arg, Authorized, Ctx, FieldResolver, Info, Mutation, Query, Resolver, Root } from 'type-graphql';
 import { Geo, GeoInput, GeoModel } from '.';
 import { getUserLoader, User } from '../user';
 import { getLayerLoader, Layer } from '../layer';
 import { ApolloContext } from '$types/index';
 import { ObjectId } from 'mongodb';
 import { GraphQLResolveInfo } from 'graphql';
+import { ObjectIdScalar } from '$helpers/scalars';
 
 @Resolver(() => Geo)
 export class GeoResolvers {
 
   @Query(() => [Geo])
   async geos(
-    @Arg('layerId', () => ID) layerId: Layer
+    @Arg('layerId', () => ObjectIdScalar) layerId: Layer,
   ): Promise<Geo[]> {
     try {
       return await GeoModel.find({

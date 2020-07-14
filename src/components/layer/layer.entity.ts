@@ -2,16 +2,18 @@ import {
   DocumentType,
   getModelForClass,
   modelOptions,
+  mongoose,
   prop as Property,
   Ref,
   ReturnModelType,
 } from '@typegoose/typegoose';
-import { Field, ID, Maybe, ObjectType } from 'type-graphql';
+import { Field, Maybe, ObjectType } from 'type-graphql';
 import { ObjectId } from 'mongodb';
 import { User } from '../user';
-import { GraphQLJSON } from '$helpers/scalars';
+import { GraphQLJSON, ObjectIdScalar } from '$helpers/scalars';
 import { Access, ACCESS_CODE, checkAccess } from '$components/access';
 import { DecodedToken } from '$components/auth';
+import { GeoJsonProperties } from 'geojson';
 
 export class LayerNestedSetting {
   @Property({ required: true })
@@ -38,7 +40,7 @@ export class LayerSetting extends LayerNestedSetting{
 @modelOptions({ schemaOptions: { timestamps: true} })
 export class Layer {
 
-  @Field(() => ID)
+  @Field(() => ObjectIdScalar)
   readonly _id!: ObjectId;
 
   @Field(() => Date)
@@ -66,8 +68,8 @@ export class Layer {
   access?: ACCESS_CODE;
 
   @Field(() => GraphQLJSON)
-  @Property({ type: LayerSetting })
-  settings?: Map<string, LayerSetting>;
+  @Property({ type: mongoose.Schema.Types.Mixed })
+  configuration?: GeoJsonProperties;
 
 
   static async getAllowed(

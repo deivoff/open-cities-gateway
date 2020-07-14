@@ -1,9 +1,9 @@
-import { Field, Float, ID, InputType, Int, ObjectType } from 'type-graphql';
+import { Field, Float, InputType, Int, ObjectType } from 'type-graphql';
 import { ObjectId } from 'mongodb';
 import { GeoJsonProperties } from 'geojson';
 import { User } from '../user';
 import { GeometryCoords, GeometryType, Position } from '.';
-import { GraphQLJSON } from '$helpers/scalars';
+import { GraphQLJSON, ObjectIdScalar } from '$helpers/scalars';
 import { Layer } from '../layer';
 import {
   getModelForClass,
@@ -32,7 +32,7 @@ export class Geometry {
 @modelOptions({ schemaOptions: { timestamps: true }, options: { allowMixed: Severity.ALLOW } })
 export class Geo {
 
-  @Field(() => ID)
+  @Field(() => ObjectIdScalar)
   readonly _id!: ObjectId;
 
   @Field(() => Date)

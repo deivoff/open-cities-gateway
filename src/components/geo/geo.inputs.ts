@@ -1,7 +1,7 @@
-import { InputType, Field, ID } from 'type-graphql';
+import { Field, InputType } from 'type-graphql';
 import { GeoJsonProperties } from 'geojson';
 import { Geo, Geometry } from '.';
-import { GraphQLJSON } from '$helpers/scalars';
+import { GraphQLJSON, ObjectIdScalar } from '$helpers/scalars';
 import { Layer } from '../layer';
 
 @InputType()
@@ -13,7 +13,7 @@ export class GeoInput implements Partial<Geo> {
   @Field(() => GraphQLJSON)
   properties!: GeoJsonProperties;
 
-  @Field(() => ID)
+  @Field(() => ObjectIdScalar)
   layer!: Layer;
 
 }

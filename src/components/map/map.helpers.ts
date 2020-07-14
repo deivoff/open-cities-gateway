@@ -12,10 +12,7 @@ export const getMapLoader = (
 
   if (!dl) {
     dl = new DataLoader(async (keys: readonly (string | ObjectId)[]) => {
-      const stringKeys = keys.map(key => key.toString());
-
-
-      return MapModel.getAllowed(state?.decodedUser, { _id: { $in: stringKeys } });
+      return await MapModel.getAllowed(state?.decodedUser, { _id: { $in: keys } });
     }, { cacheKeyFn: key => key.toString() });
 
     dataloaders.set(key, dl);

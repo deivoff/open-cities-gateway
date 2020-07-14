@@ -1,11 +1,12 @@
 import { DocumentType, getModelForClass, prop as Property, Ref, ReturnModelType } from '@typegoose/typegoose';
-import { Field, ID, InputType, Int, Maybe, ObjectType } from 'type-graphql';
+import { Field, InputType, Int, Maybe, ObjectType } from 'type-graphql';
 import { ObjectId } from 'mongodb';
 import { User } from '../user';
 import { Access, ACCESS_CODE, checkAccess } from '$components/access';
 import { GeometryCoords, Position } from '$components/geo';
 import { Layer } from '$components/layer';
 import { DecodedToken } from '$components/auth';
+import { ObjectIdScalar } from '$helpers/scalars';
 
 @ObjectType()
 @InputType('MapSettingInput')
@@ -24,7 +25,7 @@ export class MapSettings {
 @ObjectType()
 export class Map {
 
-  @Field(() => ID)
+  @Field(() => ObjectIdScalar)
   readonly _id!: ObjectId;
 
   @Field(() => Date)
@@ -56,7 +57,7 @@ export class Map {
   settings!: MapSettings;
 
   @Field(() => [Layer])
-  @Property({ items: Layer })
+  @Property({ required: true, ref: Layer, type: () => [Layer] })
   layers?: Ref<Layer>[];
 
   @Field(() => Boolean)

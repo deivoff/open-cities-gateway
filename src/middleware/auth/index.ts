@@ -36,7 +36,7 @@ export const isAuth = async (ctx: Context, next: () => Promise<any>) => {
   return await next();
 };
 
-export const authChecker: AuthChecker<{ ctx: Context }, USER_ROLE> = ({ context: { ctx: { state} }}, roles) => {
+export const authChecker: AuthChecker<Context, USER_ROLE> = ({ context: { state } }, roles) => {
   if (!state.isAuth) return false;
 
   if (roles.length === 0) return true;

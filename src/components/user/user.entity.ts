@@ -1,16 +1,12 @@
-import {
-  getModelForClass,
-  prop as Property,
-} from '@typegoose/typegoose';
+import { getModelForClass, prop as Property } from '@typegoose/typegoose';
 import jwt from 'jsonwebtoken';
-import path from 'path';
-import { Field, ID, ObjectType } from 'type-graphql';
-
+import CONFIG from '$configs/index';
+import { Field, ObjectType } from 'type-graphql';
 import { ObjectId } from 'mongodb';
+import { ObjectIdScalar } from '$helpers/scalars';
 import { USER_ROLE } from '.';
 import { AuthData } from '../auth';
 
-require('dotenv').config({ path: path.join(`${__dirname}./../../../.env`) });
 @ObjectType()
 export class UserPhoto {
 
@@ -58,7 +54,7 @@ export class UserName {
 @ObjectType()
 export class User {
 
-  @Field(() => ID)
+  @Field(() => ObjectIdScalar)
   readonly _id!: ObjectId;
 
   @Field()
@@ -95,7 +91,7 @@ export class User {
         id: this._id,
         exp: expirationDate.getTime() / 1000,
       },
-      process.env.SECRET_KEY!,
+      CONFIG.secretKey!,
     );
   }
 

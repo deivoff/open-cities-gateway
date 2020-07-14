@@ -1,14 +1,13 @@
-import {
-  ObjectType, Field, ID
-} from 'type-graphql';
+import { Field, ObjectType } from 'type-graphql';
 import { ObjectId } from 'mongodb';
 import { getModelForClass, prop as Property, Ref, ReturnModelType } from '@typegoose/typegoose';
 import { Map } from '$components/map';
+import { ObjectIdScalar } from '$helpers/scalars';
 
 @ObjectType()
 export class City {
 
-  @Field(() => ID)
+  @Field(() => ObjectIdScalar)
   readonly _id!: ObjectId;
 
   @Field()

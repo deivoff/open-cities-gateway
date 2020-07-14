@@ -83,11 +83,12 @@ export const createApp = async () => {
 
   const server = new ApolloServer({
     schema,
-    context: ({ ctx: { request, state } }: { ctx: Context }): ApolloContext => ({
-      state,
-      request,
-      dataloaders: new WeakMap(),
-    }),
+    context: ({ ctx: { request, state } }: { ctx: Context }): ApolloContext =>
+      ({
+        state,
+        request,
+        dataloaders: new WeakMap(),
+      }),
     playground: CONFIG.env === 'development',
     introspection: true,
   });

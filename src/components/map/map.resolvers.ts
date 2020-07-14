@@ -1,4 +1,4 @@
-import { Arg, Authorized, Ctx, FieldResolver, ID, Info, Mutation, Query, Resolver, Root } from 'type-graphql';
+import { Arg, Authorized, Ctx, FieldResolver, Info, Mutation, Query, Resolver, Root } from 'type-graphql';
 import { GraphQLResolveInfo } from 'graphql';
 import { ObjectId } from 'mongodb';
 import { ApolloContext } from '$types/index';
@@ -6,12 +6,13 @@ import { getUserLoader } from '$components/user';
 import { AccessType, getAccessCode, getDefaultAccessSettings } from '$components/access';
 import { getLayerLoader } from '$components/layer';
 import { getMapLoader, Map, MapInput, MapModel } from '.';
+import { ObjectIdScalar } from '$helpers/scalars';
 
 @Resolver(() => Map)
 export class MapResolvers {
   @Query(() => Map, { nullable: true })
   async map(
-    @Arg('mapId', () => ID) mapId: ObjectId,
+    @Arg('mapId', () => ObjectIdScalar) mapId: ObjectId,
     @Ctx() context: ApolloContext,
     @Info() info: GraphQLResolveInfo,
   ) {
@@ -21,11 +22,14 @@ export class MapResolvers {
 
   @Query(() => [Map])
   async maps(
-    @Arg('userId', () => ID) userId: ObjectId,
-    @Ctx() { state }: ApolloContext
-    ) {
+    @Arg('userId', () => ObjectIdScalar) userId: ObjectId,
+    @Ctx() { state }: ApolloContext,
+  ) {
     try {
-      const maps = await MapModel.getAllowed(state?.decodedUser, { owner: userId });
+      const maps = await MapModel.getAllowed(
+        state?.decodedUser,
+        { owner: userId },
+      );
       return maps.filter(map => map);
     } catch (error) {
       throw error;
@@ -35,8 +39,13 @@ export class MapResolvers {
   @Authorized()
   @Mutation(() => Map)
   async createMap(
-    @Arg('mapInput', () => MapInput) mapInput: MapInput,
-    @Arg('type', () => AccessType, { nullable: true }) type: AccessType,
+    @Arg(
+      'mapInput', () => MapInput,
+    ) mapInput: MapInput,
+    @Arg(
+      'type', () => AccessType,
+      { nullable: true },
+    ) type: AccessType,
     @Ctx() { state }: ApolloContext,
   ): Promise<Map> {
     const { decodedUser } = state;
@@ -81,6 +90,7 @@ export class MapResolvers {
     @Info() info: GraphQLResolveInfo,
   ) {
     const dl = getLayerLoader(info.fieldNodes, context);
-    return await dl.loadMany(map.layers as ObjectId[]);
+    const layers = await dl.loadMany(map.layers as ObjectId[]);
+    return layers.filter(layer => layer);
   }
 }
