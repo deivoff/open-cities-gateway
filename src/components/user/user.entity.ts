@@ -70,7 +70,7 @@ export class User {
   role!: USER_ROLE;
 
   @Field(() => [UserPhoto])
-  @Property({ items: UserPhoto, _id: false })
+  @Property({ type: UserPhoto, _id: false })
   photos?: UserPhoto[];
 
   @Field(() => UserSocial)

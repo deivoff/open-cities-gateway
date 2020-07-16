@@ -13,7 +13,7 @@ import { ObjectIdScalar } from '$helpers/scalars';
 export class MapSettings {
 
   @Field(() => GeometryCoords)
-  @Property({ required: true, items: Array })
+  @Property({ required: true, type: Number, dim: 2 })
   bbox!: Position[];
 
   @Field(() => Int)

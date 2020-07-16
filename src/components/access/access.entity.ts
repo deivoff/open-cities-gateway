@@ -1,12 +1,12 @@
 import { Field, ObjectType } from 'type-graphql';
-import { arrayProp as Properties, prop as Property, Ref } from '@typegoose/typegoose';
+import { prop as Property, Ref } from '@typegoose/typegoose';
 import { User, USER_ROLE } from '$components/user';
 
 @ObjectType()
 abstract class AccessGroup {
 
   @Field(() => [User], { nullable: true })
-  @Properties({ ref: User, default: [] })
+  @Property({ ref: User, default: [] })
   group?: Ref<User>[];
 
 }

@@ -14,6 +14,7 @@ import { GraphQLJSON, ObjectIdScalar } from '$helpers/scalars';
 import { Access, ACCESS_CODE, checkAccess } from '$components/access';
 import { DecodedToken } from '$components/auth';
 import { GeoJsonProperties } from 'geojson';
+import { HexColorScalar } from '.';
 
 export class LayerNestedSetting {
   @Property({ required: true })
@@ -27,6 +28,9 @@ export class LayerNestedSetting {
 
   @Property({ required: true })
   type!: string;
+
+  @Property({ required: true })
+  hide!: boolean;
 }
 
 export class LayerSetting extends LayerNestedSetting{
@@ -56,6 +60,10 @@ export class Layer {
   @Field()
   @Property()
   description?: string;
+
+  @Field(() => HexColorScalar)
+  @Property({ required: true })
+  color!: string;
 
   @Field(() => User)
   @Property({ required: true, ref: User })

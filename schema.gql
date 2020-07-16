@@ -4,12 +4,12 @@
 # -----------------------------------------------
 
 enum ACCESS_CODE {
-    COMMENT
-    COOWNER
-    EDIT
-    NONE
-    OWNER
-    VIEW
+  COMMENT
+  COOWNER
+  EDIT
+  NONE
+  OWNER
+  VIEW
 }
 
 enum AccessType {
@@ -26,8 +26,8 @@ type AuthResponse {
 }
 
 type City {
-    _id: ObjectId!
-    map: Map!
+  _id: ObjectId!
+  map: Map!
   name: String!
   photo: String!
   url: String!
@@ -39,8 +39,8 @@ The javascript `Date` as string. Type represents date and time as the ISO Date s
 scalar DateTime
 
 type Geo {
-    _id: ObjectId!
-    createdAt: DateTime!
+  _id: ObjectId!
+  createdAt: DateTime!
   geometry: Geometry!
   layer: Layer!
   owner: User!
@@ -49,9 +49,9 @@ type Geo {
 }
 
 input GeoInput {
-    geometry: GeometryInput!
-    layer: ObjectId!
-    properties: JSON!
+  geometry: GeometryInput!
+  layer: ObjectId!
+  properties: JSON!
 }
 
 type Geometry {
@@ -82,15 +82,21 @@ type GoogleProvider {
 }
 
 """
+A field whose value is a hex color code: https://en.wikipedia.org/wiki/Web_colors.
+"""
+scalar HEXColor
+
+"""
 The `JSON` scalar type represents JSON values as specified by [ECMA-404](http://www.ecma-international.org/publications/files/ECMA-ST/ECMA-404.pdf).
 """
 scalar JSON
 
 type Layer {
-    _id: ObjectId!
-    access: ACCESS_CODE!
-    configuration: JSON!
-    createdAt: DateTime!
+  _id: ObjectId!
+  access: ACCESS_CODE!
+  color: HEXColor!
+  configuration: JSON!
+  createdAt: DateTime!
   description: String!
   name: String!
   owner: User!
@@ -98,14 +104,14 @@ type Layer {
 }
 
 input LayerInput {
-    configuration: JSON!
-    description: String!
+  configuration: JSON!
+  description: String!
   name: String!
 }
 
 type Map {
-    _id: ObjectId!
-    access: ACCESS_CODE!
+  _id: ObjectId!
+  access: ACCESS_CODE!
   createdAt: DateTime!
   description: String!
   draft: Boolean!
@@ -133,31 +139,32 @@ type MapSettings {
 }
 
 type Mutation {
-    authGoogle(code: String!): AuthResponse!
-    createGeo(geoInput: GeoInput!): Geo!
-    createGeos(geoInput: [GeoInput!]!): [Geo!]!
-    createLayer(layerInput: LayerInput!, mapId: ObjectId!): Layer!
-    createMap(mapInput: MapInput!, type: AccessType): Map!
+  authGoogle(code: String!): AuthResponse!
+  createGeo(geoInput: GeoInput!): Geo!
+  createGeos(geoInput: [GeoInput!]!): [Geo!]!
+  createLayer(layerInput: LayerInput!): Layer!
+  createLayerForMap(layerInput: LayerInput!, mapId: ObjectId!): Layer!
+  createMap(mapInput: MapInput!, type: AccessType): Map!
 }
 
 """Mongo object id scalar type"""
 scalar ObjectId
 
 type Query {
-    cities: [City!]!
-    city(url: String!): City
-    geos(layerId: ObjectId!): [Geo!]!
-    getGoogleOAuthRedirect: AuthRedirect!
-    layer(layerId: ObjectId!): Layer
-    layers(mapId: ObjectId!): [Layer!]!
-    map(mapId: ObjectId!): Map
-    maps(userId: ObjectId!): [Map!]!
-    users: [User!]!
+  cities: [City!]!
+  city(url: String!): City
+  geos(layerId: ObjectId!): [Geo!]!
+  getGoogleOAuthRedirect: AuthRedirect!
+  layer(layerId: ObjectId!): Layer
+  layers(mapId: ObjectId!): [Layer!]!
+  map(mapId: ObjectId!): Map
+  maps(userId: ObjectId!): [Map!]!
+  users: [User!]!
 }
 
 type User {
-    _id: ObjectId!
-    email: String!
+  _id: ObjectId!
+  email: String!
   name: UserName!
   photos: [UserPhoto!]!
   role: USER_ROLE!
