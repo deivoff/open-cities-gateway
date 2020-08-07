@@ -78,10 +78,6 @@ export class User {
   social!: UserSocial;
 
   generateJWT() {
-    const today = new Date();
-    const expirationDate = new Date(today);
-    expirationDate.setDate(today.getDate() + 60);
-
     return jwt.sign(
       {
         email: this.email,
@@ -89,9 +85,9 @@ export class User {
         photos: this.photos ? this.photos : [],
         access: this.role,
         id: this._id,
-        exp: expirationDate.getTime() / 1000,
       },
       CONFIG.secretKey!,
+    { expiresIn: '1h' },
     );
   }
 

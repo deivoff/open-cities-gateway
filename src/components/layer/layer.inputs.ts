@@ -1,5 +1,5 @@
 import { Field, InputType } from 'type-graphql';
-import { Layer, LayerSetting } from '.';
+import { HexColorScalar, Layer, LayerSetting } from '.';
 import { GraphQLJSON } from '$helpers/scalars';
 
 @InputType()
@@ -10,6 +10,9 @@ export class LayerInput implements Partial<Layer> {
 
   @Field()
   description!: string;
+
+  @Field(() => HexColorScalar)
+  color!: string;
 
   @Field(() => GraphQLJSON)
   configuration!: Map<string, LayerSetting>

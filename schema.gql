@@ -104,6 +104,7 @@ type Layer {
 }
 
 input LayerInput {
+  color: HEXColor!
   configuration: JSON!
   description: String!
   name: String!
@@ -130,12 +131,10 @@ input MapInput {
 
 input MapSettingInput {
   bbox: GeometryCoords!
-  zoom: Int!
 }
 
 type MapSettings {
   bbox: GeometryCoords!
-  zoom: Int!
 }
 
 type Mutation {

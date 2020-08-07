@@ -1,5 +1,5 @@
 import { DocumentType, getModelForClass, prop as Property, Ref, ReturnModelType } from '@typegoose/typegoose';
-import { Field, InputType, Int, Maybe, ObjectType } from 'type-graphql';
+import { Field, InputType, Maybe, ObjectType } from 'type-graphql';
 import { ObjectId } from 'mongodb';
 import { User } from '../user';
 import { Access, ACCESS_CODE, checkAccess } from '$components/access';
@@ -15,10 +15,6 @@ export class MapSettings {
   @Field(() => GeometryCoords)
   @Property({ required: true, type: Number, dim: 2 })
   bbox!: Position[];
-
-  @Field(() => Int)
-  @Property({ required: true })
-  zoom!: number;
 
 }
 
