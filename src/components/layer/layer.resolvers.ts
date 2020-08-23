@@ -36,32 +36,10 @@ export class LayerResolvers {
 
   @Authorized([USER_ROLE.RESEARCHER])
   @Mutation(() => Layer)
-  async createLayerForMap(
-    @Arg('layerInput', () => LayerInput) layerInput: LayerInput,
-    @Arg('mapId', () => ObjectIdScalar) mapId: string,
-    @Ctx() { state }: ApolloContext,
-  ) {
-    const { decodedUser } = state;
-
-    const layer = new LayerModel({
-      ...layerInput,
-      owner: decodedUser!.id,
-      _access: getDefaultAccessSettings(),
-    });
-    try {
-      const savedLayer = await layer.save();
-      await MapModel.findByIdAndUpdate(mapId, { $push: { layers: savedLayer._id } });
-      return savedLayer;
-    } catch (err) {
-      throw err;
-    }
-  }
-
-  @Authorized([USER_ROLE.RESEARCHER])
-  @Mutation(() => Layer)
   async createLayer(
-    @Arg('layerInput', () => LayerInput) layerInput: LayerInput,
     @Ctx() { state }: ApolloContext,
+    @Arg('layerInput', () => LayerInput) layerInput: LayerInput,
+    @Arg('mapId', () => ObjectIdScalar, { nullable: true }) mapId?: string,
   ) {
     const { decodedUser } = state;
 
@@ -71,7 +49,11 @@ export class LayerResolvers {
       _access: getDefaultAccessSettings(),
     });
     try {
-      return await layer.save();
+      const newLayer = await layer.save();
+      if (mapId) {
+        await MapModel.findByIdAndUpdate(mapId, { $push: { layers: newLayer._id } });
+      }
+      return newLayer;
     } catch (err) {
       throw err;
     }

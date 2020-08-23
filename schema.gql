@@ -141,8 +141,7 @@ type Mutation {
   authGoogle(code: String!): AuthResponse!
   createGeo(geoInput: GeoInput!): Geo!
   createGeos(geoInput: [GeoInput!]!): [Geo!]!
-  createLayer(layerInput: LayerInput!): Layer!
-  createLayerForMap(layerInput: LayerInput!, mapId: ObjectId!): Layer!
+  createLayer(layerInput: LayerInput!, mapId: ObjectId): Layer!
   createMap(mapInput: MapInput!, type: AccessType): Map!
 }
 
