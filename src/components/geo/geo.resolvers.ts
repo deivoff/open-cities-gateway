@@ -1,6 +1,6 @@
 import { Arg, Authorized, Ctx, FieldResolver, Info, Mutation, Query, Resolver, Root } from 'type-graphql';
 import { Geo, GeoInput, GeoModel } from '.';
-import { getUserLoader, User } from '../user';
+import { getUserLoader, User, USER_ROLE } from '../user';
 import { getLayerLoader, Layer } from '../layer';
 import { ApolloContext } from '$types/index';
 import { ObjectId } from 'mongodb';
@@ -56,6 +56,16 @@ export class GeoResolvers {
     } catch (err) {
       throw err;
     }
+  }
+
+  //TODO upload files func
+  @Authorized([USER_ROLE.RESEARCHER])
+  @Mutation(() => [Geo])
+  async uploadGeos(
+    @Arg('layerId', () => ObjectIdScalar) layerId: Layer,
+    @Ctx() { state }: ApolloContext,
+  ) {
+
   }
 
   @FieldResolver(() => User)
